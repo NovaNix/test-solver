@@ -1,61 +1,98 @@
 body, html {
-  height: 100%;
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
+    height: 100%;
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+	
+	font-family: Consolas;
 }
 
 #app {
-  height: 100%;
+    height: 100%;
 }
 
 html {
-  --grid-background: #3D3D3D;
-  --grid-line: #545454; /* REMEMBER TO INCLUDE OPACITY */
-  --grid-line-opacity: 0.501961;
-  --x-axis-color: #FF3352;
-  --y-axis-color: #8BDC00; 
+    --grid-background: #3D3D3D;
+    --grid-line: #545454; /* REMEMBER TO INCLUDE OPACITY */
+    --grid-line-opacity: 0.501961;
+    --x-axis-color: #FF3352;
+    --y-axis-color: #8BDC00; 
 
-  --point: #000000;
+    --point: #000000;
 
-  --point-selected: #FF7A00;
-  --line-selected: #FFA000;
+    --point-selected: #FF7A00;
+    --line-selected: #FFA000;
 
-  --regular-point-size: 6; /* In pixels */
-  --construction-point-size: 6; /* In pixels */
-  --point-stroke-size: 2px;
-  --axis-thickness: 1px;
+    --regular-point-size: 6; /* In pixels */
+    --construction-point-size: 6; /* In pixels */
+    --point-stroke-size: 2px;
+    --axis-thickness: 1px;
 }
 
 svg * {
-  vector-effect: non-scaling-stroke;
+    vector-effect: non-scaling-stroke;
 }
 
 /* svg> * {
-  transform: translate(-50%, -50%) scale(90)
+    transform: translate(-50%, -50%) scale(90)
 } */
 
 /* Background Grid */
 
 #grid rect {
-  fill: var(--grid-background);
+    fill: var(--grid-background);
 }
 
 #grid path {
-  stroke: var(--grid-line);
-  stroke-opacity: var(--grid-line-opacity);
-  /* stroke-width: calc(var(--axis-thickness) / var(--view-scale)); */
-  stroke-width: var(--axis-thickness)
+    stroke: var(--grid-line);
+    stroke-opacity: var(--grid-line-opacity);
+    /* stroke-width: calc(var(--axis-thickness) / var(--view-scale)); */
+    stroke-width: var(--axis-thickness)
 }
 
 #x-axis {
-  stroke: var(--x-axis-color);
-  /* stroke-width: calc(var(--axis-thickness) / var(--view-scale)); */
-  stroke-width: var(--axis-thickness)
+    stroke: var(--x-axis-color);
+    /* stroke-width: calc(var(--axis-thickness) / var(--view-scale)); */
+    stroke-width: var(--axis-thickness)
 }
 
 #y-axis {
-  stroke: var(--y-axis-color);
-  /* stroke-width: calc(var(--axis-thickness) / var(--view-scale)); */
-  stroke-width: var(--axis-thickness)
+    stroke: var(--y-axis-color);
+    /* stroke-width: calc(var(--axis-thickness) / var(--view-scale)); */
+    stroke-width: var(--axis-thickness)
+}
+
+/* Point Template Stuff */
+
+#regular-point {
+    --point-size: var(--regular-point-size)
+}
+
+#construction-point {
+    --point-size: var(--construction-point-size)
+}
+
+.point-template {
+    transform: 
+	    scale(var(--view-scale)) /* World to View */
+	    scale(calc(var(--point-size) * var(--view-scale))) /* Convert point size to view space, scale it by that value */
+	    ;
+
+    vector-effect: non-scaling-stroke;
+    fill: inherit;
+    stroke: inherit;
+    stroke-width: inherit;
+}
+
+/* Tree Styling */
+
+.tree-cell {
+	height: 22px;
+	font-size: 11pt;
+	color: #C3C3C3;
+	margin: 0;
+}
+
+.tree-container > *:not(summary) {
+	margin-left: 8px;
 }

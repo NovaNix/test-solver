@@ -1,6 +1,48 @@
-<div id="renderSpace">
-	<canvas id="canvas" width="750" height="500"></canvas>
-	<svg id="svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<script>
+    import { onMount } from "svelte";
+    import Sketch from "../entities/ui/Sketch.svelte";
+	import {sketch} from "../solver/solver.js"
+
+	const ppu = 90.0;
+
+	let renderSpace;
+	let canvas;
+	let svg;
+
+	let width;
+	let height;
+
+	let scale;
+
+	function updateScale()
+	{
+		width = renderSpace.clientWidth;
+		height = renderSpace.clientHeight;
+
+		let xScale = width / ppu;
+		let yScale = height / ppu;
+		scale = 1.0 / Math.max(xScale, yScale);
+
+		canvas.width = renderSpace.clientWidth;
+    	canvas.height = renderSpace.clientHeight;
+		
+    	svg.setAttribute('width', renderSpace.clientWidth);
+    	svg.setAttribute('height', renderSpace.clientHeight);
+
+    	svg.setAttribute("viewBox", `${-(renderSpace.clientWidth / 2.0) / ppu} ${-(renderSpace.clientHeight / 2.0) / ppu} ${renderSpace.clientWidth / ppu} ${renderSpace.clientHeight / ppu}`)
+	}
+
+	onMount(() => {
+		const resizeObserver = new ResizeObserver(updateScale);
+		resizeObserver.observe(renderSpace);
+
+		updateScale();
+	});
+</script>
+
+<div id="renderSpace" bind:this={renderSpace} style:--view-scale={scale}>
+	<canvas id="canvas" width="750" height="500" bind:this={canvas}></canvas>
+	<svg id="svg" xmlns:xlink="http://www.w3.org/1999/xlink" bind:this={svg}>
 		<defs>
 			<pattern id="grid" width="1" height="1" patternUnits="userSpaceOnUse">
 				<rect x=0 y=0 width="1" height="1"/>
@@ -13,6 +55,8 @@
 		<rect x="-50%" y="-50%" width="100%" height="100%" fill="url(#grid)" />
 		<line x1="-1000" y1="0" x2="1000" y2="0" id="x-axis"/>
 		<line x1="0" y1="-1000" x2="0" y2="1000" id="y-axis"/>
+
+		<Sketch sketch={sketch}/>
 	</svg>
 </div>
 

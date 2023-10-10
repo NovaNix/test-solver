@@ -1,9 +1,9 @@
 <script>
-	
+	import PropTree from "../propviewer/PropTree.svelte"
 </script>
 
 <aside id="sidebar">
-
+	<PropTree/>
 </aside>
 
 <style>
@@ -13,7 +13,8 @@
 
     	/* overflow: auto; */
 
-    	background-color: salmon;
+    	background-color: #303030;
+		padding: 5px;
     	/* resize: horizontal; */
 	}
 </style>
