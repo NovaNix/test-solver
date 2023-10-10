@@ -1,0 +1,39 @@
+
+
+/* Element Stylization */
+
+#regular-point {
+    --point-size: var(--regular-point-size)
+}
+
+#construction-point {
+    --point-size: var(--construction-point-size)
+}
+
+.point-template {
+    transform: 
+        scale(var(--view-scale)) /* World to View */
+        scale(calc(var(--point-size) * var(--view-scale))) /* Convert point size to view space, scale it by that value */
+        ;
+
+    vector-effect: non-scaling-stroke;
+    fill: inherit;
+    stroke: inherit;
+    stroke-width: inherit;
+}
+
+.point {
+    stroke-width: var(--point-stroke-size);
+    stroke: var(--point);
+    fill: var(--point);
+    vector-effect: non-scaling-stroke;
+    
+}
+
+
+
+.point.selected {
+    stroke: var(--point-selected)
+}
+
+

@@ -1,0 +1,61 @@
+body, html {
+  height: 100%;
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+#app {
+  height: 100%;
+}
+
+html {
+  --grid-background: #3D3D3D;
+  --grid-line: #545454; /* REMEMBER TO INCLUDE OPACITY */
+  --grid-line-opacity: 0.501961;
+  --x-axis-color: #FF3352;
+  --y-axis-color: #8BDC00; 
+
+  --point: #000000;
+
+  --point-selected: #FF7A00;
+  --line-selected: #FFA000;
+
+  --regular-point-size: 6; /* In pixels */
+  --construction-point-size: 6; /* In pixels */
+  --point-stroke-size: 2px;
+  --axis-thickness: 1px;
+}
+
+svg * {
+  vector-effect: non-scaling-stroke;
+}
+
+/* svg> * {
+  transform: translate(-50%, -50%) scale(90)
+} */
+
+/* Background Grid */
+
+#grid rect {
+  fill: var(--grid-background);
+}
+
+#grid path {
+  stroke: var(--grid-line);
+  stroke-opacity: var(--grid-line-opacity);
+  /* stroke-width: calc(var(--axis-thickness) / var(--view-scale)); */
+  stroke-width: var(--axis-thickness)
+}
+
+#x-axis {
+  stroke: var(--x-axis-color);
+  /* stroke-width: calc(var(--axis-thickness) / var(--view-scale)); */
+  stroke-width: var(--axis-thickness)
+}
+
+#y-axis {
+  stroke: var(--y-axis-color);
+  /* stroke-width: calc(var(--axis-thickness) / var(--view-scale)); */
+  stroke-width: var(--axis-thickness)
+}
