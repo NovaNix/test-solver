@@ -74,8 +74,9 @@ svg * {
 
 .point-template {
     transform: 
-	    scale(var(--view-scale)) /* World to View */
-	    scale(calc(var(--point-size) * var(--view-scale))) /* Convert point size to view space, scale it by that value */
+	    scale(var(--inverse-zoom)) /* Camera to World */
+	    scale(var(--inverse-ppu)) /* World to Screen */
+        scale(var(--point-size)) /* Convert point size to view space, scale it by that value */
 	    ;
 
     vector-effect: non-scaling-stroke;
@@ -87,12 +88,13 @@ svg * {
 /* Tree Styling */
 
 .tree-cell {
-	height: 22px;
-	font-size: 11pt;
-	color: #C3C3C3;
-	margin: 0;
+    height: 22px;
+    line-height: 22px;
+    font-size: 11pt;
+    color: #C3C3C3;
+    margin: 0;
 }
 
 .tree-container > *:not(summary) {
-	margin-left: 8px;
+    margin-left: 12px;
 }
