@@ -23,6 +23,11 @@ html {
     --point-selected: #FF7A00;
     --line-selected: #FFA000;
 
+    --construction-color: #4B4B4B;
+
+    --loose-geometry-color: #00A5FF;
+    --solve-error-color: #DB2512;
+
     --regular-point-size: 6; /* In pixels */
     --construction-point-size: 6; /* In pixels */
     --point-stroke-size: 2px;
