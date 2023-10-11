@@ -25,7 +25,9 @@ html {
     --construction-opacity: 0.5;
 
     --point-selected: #FF7A00;
+    --point-hover: #FFA000;
     --entity-selected: #FFA000;
+    --entity-hover: #FFD000;
 
     --loose-entity-color: #00A5FF;
     --solve-error-color: #DB2512;
@@ -42,6 +44,10 @@ html {
 
     --number-input-background: #545454;
 
+    --collision-overlay-color: #FF0000;
+    --collision-overlay-opacity: 0.2; /* Set to 0 to hide collisions */
+
+    --sidebar-color: #303030;
 }
 
 svg * {
@@ -104,7 +110,8 @@ svg * {
 
 .tree> button:nth-of-type(even)
 {
-    background-color: rgba(255, 255, 255, 0.015686);
+    /* background-color: rgba(255, 255, 255, 0.015686); */
+    background-color: color-mix(in srgb, var(--sidebar-color), white 1.5686%)
     /* background-color: white; */
 }
 
@@ -117,7 +124,7 @@ svg * {
     padding: 0;
     margin: 0;
     border-style: none;
-    background-color: transparent;
+    background-color: var(--sidebar-color);
 
     padding-left: calc(var(--tree-depth) * 22px);
 
@@ -125,10 +132,6 @@ svg * {
     flex-direction: row;
     justify-content: flex-start;
     align-items: center;
-}
-
-.tree-cell.selected {
-    background-color: var(--tree-selected-color);
 }
 
 .icon {

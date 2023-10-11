@@ -38,6 +38,8 @@ export class Sketch
             items.push(entity);
             return items;
         });
+
+        return entity; // Returns the added entity for chaining
     }
 
     hasEntity(name)

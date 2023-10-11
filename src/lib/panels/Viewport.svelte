@@ -154,7 +154,7 @@
     import { draw } from 'svelte/transition';
 
 	let renderSpace;
-	let canvas;
+	// let canvas;
 	let svg;
 
 	function updateScale()
@@ -164,8 +164,8 @@
 
 		updateCamera($camera);
 
-		canvas.width = renderSpace.clientWidth;
-    	canvas.height = renderSpace.clientHeight;
+		// canvas.width = renderSpace.clientWidth;
+    	// canvas.height = renderSpace.clientHeight;
 		
     	svg.setAttribute('width', renderSpace.clientWidth);
     	svg.setAttribute('height', renderSpace.clientHeight);
@@ -222,7 +222,12 @@
 
 <div id="renderSpace" bind:this={renderSpace} style:--ppu={ppu} style:--inverse-ppu={1.0 / ppu} >
 	
-	<svg id="svg" xmlns:xlink="http://www.w3.org/1999/xlink" bind:this={svg}>
+	<!-- svelte-ignore a11y-click-events-have-key-events -->
+	<!-- svelte-ignore a11y-no-static-element-interactions -->
+	<svg id="svg" xmlns:xlink="http://www.w3.org/1999/xlink" bind:this={svg}
+		on:click={onMouseClick} on:wheel={onMouseWheel} on:mousedown={onMouseDown} on:mouseup={onMouseUp} on:mousemove={onMouseMove}
+	
+	>
 		<defs>
 			<pattern id="grid" width="1" height="1" patternUnits="userSpaceOnUse">
 				<rect x=0 y=0 width="1" height="1"/>
@@ -238,7 +243,7 @@
 
 		<Sketch sketch={sketch}/>
 	</svg>
-	<canvas id="canvas" width="750" height="500" bind:this={canvas} on:click={onMouseClick} on:wheel={onMouseWheel} on:mousedown={onMouseDown} on:mouseup={onMouseUp} on:mousemove={onMouseMove}></canvas>
+	<!-- <canvas id="canvas" width="750" height="500" bind:this={canvas} on:click={onMouseClick} on:wheel={onMouseWheel} on:mousedown={onMouseDown} on:mouseup={onMouseUp} on:mousemove={onMouseMove}></canvas> -->
 	<div id="camera-info">
 		<p id="camera-zoom-text">{formatNumber(Math.pow(2, $camera.zoom))}x</p>
 		<p id="camera-pos-text">{formatNumber($camera.x)}, {formatNumber($camera.y)}</p>

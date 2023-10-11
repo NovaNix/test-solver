@@ -1,6 +1,9 @@
 <script>
 	export let open = false; 
 
+	export let selected = false;
+	export let hover = false;
+
 	export let depth = 0; // The depth of the node, where 0 is the top of the tree. Used for the offset
 
 	function toggleOpen(event)
@@ -10,7 +13,14 @@
 
 </script>
 
-<button class="tree-cell" style:--tree-depth={depth}>
+<button class="tree-cell" 
+	class:selected={selected}
+	class:hover={hover}
+	style:--tree-depth={depth} 
+	on:click
+	on:mouseenter
+    on:mouseleave
+	>
 	{#if $$slots.children}
 		<button class="dropdown-button" on:click={toggleOpen}>
 			{#if open}
@@ -39,6 +49,18 @@
 		border: none;
 		padding: 0;
 		margin: 0;
+	}
+
+	.tree-cell {
+		
+	}
+
+	.tree-cell.selected {
+		background-color: var(--tree-selected-color) !important;
+	}
+
+	.tree-cell.hover {
+		filter: brightness(2);
 	}
 	/* .tree-container > *:not(summary) {
 		margin-left: 12px;

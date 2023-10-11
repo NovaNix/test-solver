@@ -2,10 +2,16 @@
     import {Entity} from "../entities/entity.js"
     import TextLeaf from "./tree/TreeLeaf.svelte";
     import TreeNode from "./tree/TreeNode.svelte";
+
+    import * as solver from "../solver/solver.js";
+
     /** @type {Entity}*/
     export let entity;
 
     export let depth = 0;
+
+    let selected = entity.selected;
+    let hover = entity.hover;
 
     const icons = {
         "point": "scatter_plot",
@@ -16,14 +22,33 @@
 
     function onClick(event)
     {
-        
+        solver.select(entity.name);
+
+        event.stopPropagation();
+    }
+
+    function onMouseEnter(event)
+    {
+        $hover = true; 
+    }
+
+    function onMouseLeave(event)
+    {
+        $hover = false;
     }
 
 </script>
 
-<TreeNode depth={depth + 1}>
+<TreeNode 
+depth={depth + 1} 
+selected={$selected} 
+hover={$hover} 
+on:click={onClick} 
+on:mouseenter={onMouseEnter}
+on:mouseleave={onMouseLeave}
+>
     <svelte:fragment slot="main">
-        <span class="icon material-symbols-outlined">{icons[entity.type]}</span><p class="entity-name">{entity.name}</p>
+        <span class="icon entity-icon material-symbols-outlined">{icons[entity.type]}</span><p class="entity-name">{entity.name}</p>
     </svelte:fragment>
     <svelte:fragment slot="children">
         {#each Object.entries(entity.data) as [name, data]}
@@ -40,6 +65,7 @@
 
     .entity-name {
         padding-left: 5px;
+        font-weight: bold;
     }
 
     p {
@@ -51,6 +77,12 @@
         font-size: 11pt;
         color: #C3C3C3;
         margin: 0;
+
+        /* font-family: ui-monospace; */
+    }
+
+    .entity-icon {
+        color: #00D4A3;
     }
 
     /* summary span {

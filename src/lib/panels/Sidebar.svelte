@@ -15,7 +15,7 @@
 
     	/* overflow: auto; */
 
-    	background-color: #303030;
+    	background-color: var(--sidebar-color);
 		padding: 5px;
     	/* resize: horizontal; */
 	}

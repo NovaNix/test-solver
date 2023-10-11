@@ -27,7 +27,9 @@ export class Entity
     construction = false;
     fixed = false;
 
+    // These two are for the UI
     selected = writable(false);
+    hover = writable(false);
 
     data;
 

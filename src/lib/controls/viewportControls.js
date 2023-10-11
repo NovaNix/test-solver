@@ -1,7 +1,7 @@
 import * as Viewport from "../panels/Viewport.svelte";
 import {sketch} from "../solver/solver.js";
 import {Point} from "../entities/point.js";
-
+import * as solver from "../solver/solver.js";
 
 
 // Mouse Events
@@ -32,7 +32,12 @@ export function onMouseClick(event)
 	{
 		let [x, y] = Viewport.viewToWorld(event.clientX, event.clientY);
 
-		sketch.addEntity(new Point("Point " + createdPoints, x, y));
+		let newPoint = sketch.addEntity(new Point("Point " + createdPoints, x, y));
+
+		// Clear the selection and select the new entity
+
+		solver.clearSelection();
+		solver.select(newPoint.name);
 
 		createdPoints++;
 	}
