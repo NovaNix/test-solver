@@ -2,6 +2,10 @@ import * as Viewport from "../panels/Viewport.svelte";
 import {sketch} from "../solver/solver.js";
 import {Point} from "../entities/point.js";
 
+
+
+// Mouse Events
+
 /** @param {WheelEvent} event */
 export function onMouseWheel(event)
 {
@@ -64,20 +68,6 @@ export function onMouseUp(event)
 /** @param {MouseEvent} event */
 export function onMouseMove(event)
 {
-	let cameraPos = Viewport.getPosition();
-	let cameraZoom = Viewport.getZoom(); 
-
-	let cameraMouse = Viewport.viewToCamera(event.clientX, event.clientY) 
-	let worldMouse = Viewport.viewToWorld(event.clientX, event.clientY);
-
-	console.log(`Camera Pos: ${cameraPos[0]}, ${cameraPos[1]}`);
-	console.log(`Camera Zoom: ${cameraZoom}`);
-
-	console.log(`Mouse Pos:
-	(View): ${event.clientX}, ${event.clientY}
-	(Camera): ${cameraMouse[0]}, ${cameraMouse[1]}
-	(World): ${worldMouse[0]}, ${worldMouse[1]}
-	`)
 
 	if (viewDragging)
 	{

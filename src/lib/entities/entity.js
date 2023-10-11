@@ -1,3 +1,5 @@
+import { writable } from 'svelte/store';
+
 export class DataType
 {
 
@@ -25,7 +27,7 @@ export class Entity
     construction = false;
     fixed = false;
 
-    selected = false;
+    selected = writable(false);
 
     data;
 

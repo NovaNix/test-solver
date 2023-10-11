@@ -1,7 +1,11 @@
 <script>
     import {Entity} from "../entities/entity.js"
+    import TextLeaf from "./tree/TreeLeaf.svelte";
+    import TreeNode from "./tree/TreeNode.svelte";
     /** @type {Entity}*/
     export let entity;
+
+    export let depth = 0;
 
     const icons = {
         "point": "scatter_plot",
@@ -10,42 +14,53 @@
         "arc": "progress_activity"
     }
 
-</script>
-
-<details class="tree-container">
-    <summary class="tree-cell">
-        {entity.name}
-        <!-- <span class="icon material-symbols-outlined">{icons[entity.type]}</span>{entity.name} -->
-    </summary>
-
-    {#each Object.entries(entity.data) as [name, data]}
-        <p class="tree-cell">{name}: {data.value}</p>
-    {/each}
-
-    <p class="tree-cell">fixed: {entity.fixed}</p>
-    <p class="tree-cell">construction: {entity.construction}</p>
-</details>
-
-<style>
-    .icon {
-        height: 100%;
+    function onClick(event)
+    {
+        
     }
 
-    summary {
+</script>
+
+<TreeNode depth={depth + 1}>
+    <svelte:fragment slot="main">
+        <span class="icon material-symbols-outlined">{icons[entity.type]}</span><p class="entity-name">{entity.name}</p>
+    </svelte:fragment>
+    <svelte:fragment slot="children">
+        {#each Object.entries(entity.data) as [name, data]}
+            <TextLeaf depth={depth + 2}><p>{name}: {data.value}</p></TextLeaf>
+        {/each}
+
+        <TextLeaf depth={depth + 2}><p>fixed: {entity.fixed}</p></TextLeaf>
+        <TextLeaf depth={depth + 2}><p>construction: {entity.construction}</p></TextLeaf>
+    </svelte:fragment>
+</TreeNode>
+
+<style>
+    
+
+    .entity-name {
+        padding-left: 5px;
+    }
+
+    p {
         /* display: inline-block; */
         line-height: 22px;
         height: 22px;
         vertical-align: middle;
+
+        font-size: 11pt;
+        color: #C3C3C3;
+        margin: 0;
     }
 
-    summary span {
+    /* summary span {
         display: inline-block;
         line-height: 22px;
         height: 22px;
-    }
+    } */
 
-    summary * {
+    /* summary * {
         display: inline-block;
         height: 100%;
-    }
+    } */
 </style>

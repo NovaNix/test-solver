@@ -2,7 +2,7 @@
 	import { writable } from 'svelte/store';
 	import { get } from 'svelte/store';
 
-	import {onMouseWheel, onMouseClick, onMouseDown, onMouseUp, onMouseMove} from "../solver/controls.js";
+	import {onMouseWheel, onMouseClick, onMouseDown, onMouseUp, onMouseMove} from "../controls/viewportControls.js";
 	
 	const ppu = 90.0;
 

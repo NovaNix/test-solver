@@ -16,8 +16,8 @@ export let entity;
 <style>
     .point {
         stroke-width: var(--point-stroke-size);
-        stroke: var(--point);
-        fill: var(--point);
+        stroke: var(--point-color);
+        fill: var(--point-color);
         vector-effect: non-scaling-stroke;
 
     }

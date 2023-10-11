@@ -1,12 +1,14 @@
 <script context="module">
     const typeComponents = {
-        "point": Point
+        "point": Point,
+        "line": Line
     };
 </script>
 
 <script>
     import {Sketch} from "../../solver/solver.js"
     import Point from "./Point.svelte"
+    import Line from "./Line.svelte"
 
 
 

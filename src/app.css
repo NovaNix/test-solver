@@ -18,20 +18,30 @@ html {
     --x-axis-color: #FF3352;
     --y-axis-color: #8BDC00; 
 
-    --point: #000000;
-
-    --point-selected: #FF7A00;
-    --line-selected: #FFA000;
-
+    --point-color: #000000;
+    --entity-color: #000000;
     --construction-color: #4B4B4B;
 
-    --loose-geometry-color: #00A5FF;
+    --construction-opacity: 0.5;
+
+    --point-selected: #FF7A00;
+    --entity-selected: #FFA000;
+
+    --loose-entity-color: #00A5FF;
     --solve-error-color: #DB2512;
 
     --regular-point-size: 6; /* In pixels */
     --construction-point-size: 6; /* In pixels */
+
     --point-stroke-size: 2px;
+    --line-thickness: 2px;
     --axis-thickness: 1px;
+
+    --tree-hover-color: white;
+    --tree-selected-color: #334D80;
+
+    --number-input-background: #545454;
+
 }
 
 svg * {
@@ -92,14 +102,41 @@ svg * {
 
 /* Tree Styling */
 
-.tree-cell {
-    height: 22px;
-    line-height: 22px;
-    font-size: 11pt;
-    color: #C3C3C3;
-    margin: 0;
+.tree> button:nth-of-type(even)
+{
+    background-color: rgba(255, 255, 255, 0.015686);
+    /* background-color: white; */
 }
 
-.tree-container > *:not(summary) {
-    margin-left: 12px;
+.tree-cell {
+
+    height: 22px;
+    font-size: 11pt;
+    color: #C3C3C3;
+
+    padding: 0;
+    margin: 0;
+    border-style: none;
+    background-color: transparent;
+
+    padding-left: calc(var(--tree-depth) * 22px);
+
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    align-items: center;
+}
+
+.tree-cell.selected {
+    background-color: var(--tree-selected-color);
+}
+
+.icon {
+    height: 20px;
+    width: 20px;
+
+    font-size: 20px;
+
+    color: #C3C3C3;
+    /* aspect-ratio: 1; */
 }
