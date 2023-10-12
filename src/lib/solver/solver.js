@@ -6,8 +6,12 @@ import { get } from 'svelte/store'
 import {Constraint} from "../constraints/constraint.js"
 /** import("svelte/store").Writable */
 
+export const SELECT_MODE_NEW = 0;
+export const SELECT_MODE_ADD = 1;
+
 /** @type {import("svelte/store").Writable<Entity[]>} */
 export const selected = writable([]);
+export let selectMode = SELECT_MODE_NEW;
 
 export class Sketch 
 {
@@ -15,6 +19,9 @@ export class Sketch
     entities = writable([]);
     /** @type {import("svelte/store").Writable<Constraint[]>} */
     constraints = writable([]);
+
+    /** @type {import("svelte/store").Writable<Constraint[]>} */
+    tempConstraints = writable([]);
 
     /**
      * Causes Svelte to redraw the sketch
@@ -42,19 +49,38 @@ export class Sketch
         return entity; // Returns the added entity for chaining
     }
 
-    hasEntity(name)
+    getEntity(fullname)
     {
         let entities = get(this.entities);
 
-        for (let entity of entities)
+        let nameList = fullname.split(".");
+
+        let entityList = [...entities];
+
+        while (entityList.length > 0)
         {
-            if (entity.name == name)
+            let entity = entityList.shift();
+
+            if (entity.name == nameList[0])
             {
-                return true;
-            }
+                nameList.shift(); // Remove the found name from the list
+
+                if (nameList.length == 0)
+                {
+                    return entity;
+                }
+
+                entityList = Object.values(entity.data); // Set the entityList to the data of the found entity
+            }   
         }
 
-        return false;
+        // No element was found...
+        return null;
+    }
+
+    hasEntity(name)
+    {
+        return this.getEntity(name) != null;
     }
 
 }
@@ -73,22 +99,27 @@ sketch.addEntity(line)
 
 export function select(entityname)
 {
-    let entities = get(sketch.entities);
-
-    for (let entity of entities)
+    if (selectMode == SELECT_MODE_NEW)
     {
-        if (entity.name == entityname)
-        {
-            entity.selected.set(true);
-
-            selected.update(items => {
-                items.push(entity);
-                return items;
-            });
-
-            break; // As there should only be one entity with each name, we can stop here
-        }
+        clearSelection();
     }
+
+    let entity = sketch.getEntity(entityname);
+
+    if (entity == null)
+    {
+        console.error("Tried to select Entity " + entityname + ", but it could not be found in the sketch!");
+        return;
+    }
+
+    entity.selected.set(true);
+    
+    selected.update(items => {
+        items.push(entity);
+        return items;
+    });
+
+    
 }
 
 export function clearSelection()
