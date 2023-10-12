@@ -11,7 +11,7 @@ let hover = entity.hover;
 
 function onClick(event)
 {
-    solver.select(entity.name);
+    solver.select(entity.fullName);
 
     event.stopPropagation();
 }

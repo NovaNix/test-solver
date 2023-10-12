@@ -22,7 +22,7 @@
 
     function onClick(event)
     {
-        solver.select(entity.name);
+        solver.select(entity.fullName);
 
         event.stopPropagation();
     }
@@ -52,7 +52,12 @@ on:mouseleave={onMouseLeave}
     </svelte:fragment>
     <svelte:fragment slot="children">
         {#each Object.entries(entity.data) as [name, data]}
-            <TextLeaf depth={depth + 2}><p>{name}: {data.value}</p></TextLeaf>
+            {#if data instanceof Entity}
+                <svelte:self depth={depth + 1} entity={data}/>
+            {:else}
+                <TextLeaf depth={depth + 2}><p>{name}: {data.value}</p></TextLeaf>
+            {/if}
+            
         {/each}
 
         <TextLeaf depth={depth + 2}><p>fixed: {entity.fixed}</p></TextLeaf>

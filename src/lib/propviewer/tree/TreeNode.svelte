@@ -9,6 +9,8 @@
 	function toggleOpen(event)
 	{
 		open = !open;
+
+		event.stopPropagation(); // Prevent clicking on the button below this one
 	}
 
 </script>

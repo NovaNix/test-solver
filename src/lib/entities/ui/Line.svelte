@@ -1,6 +1,7 @@
 <script>
     import {Line} from "../line.js";
     import * as solver from "../../solver/solver.js";
+    import Point from "./Point.svelte";
 
     /** @type {Line} */
     export let entity;
@@ -50,6 +51,8 @@
     y1={entity.y1} 
     y2={entity.y2}
 />
+<Point entity={entity.p1}/>
+<Point entity={entity.p2}/>
 
 
 
