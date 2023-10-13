@@ -8,8 +8,8 @@ export class Point extends Entity
         super(name, "point");
 
         this.data = {
-            x: new FloatData(x),
-            y: new FloatData(y)
+            x: new FloatData(this, "x", x),
+            y: new FloatData(this, "y", y)
         };
 
     }

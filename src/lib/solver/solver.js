@@ -4,7 +4,7 @@ import {Line} from "../entities/line.js"
 import { writable } from 'svelte/store';
 import { get } from 'svelte/store'
 import {Constraint} from "../constraints/constraint.js"
-/** import("svelte/store").Writable */
+import { CoincidentPoints } from "../constraints/coincident.js";
 
 export const SELECT_MODE_NEW = 0;
 export const SELECT_MODE_ADD = 1;
@@ -49,11 +49,11 @@ export class Sketch
         return entity; // Returns the added entity for chaining
     }
 
-    getEntity(fullname)
+    getEntity(address)
     {
         let entities = get(this.entities);
 
-        let nameList = fullname.split(".");
+        let nameList = address.split(".");
 
         let entityList = [...entities];
 
@@ -83,19 +83,54 @@ export class Sketch
         return this.getEntity(name) != null;
     }
 
+    addConstraint(constraint)
+    {
+        console.log("Adding Constraint: " + constraint.name);
+
+        this.constraints.update(items => {
+            items.push(constraint);
+            return items;
+        });
+
+        return constraint; // Returns the added constraint for chaining
+    }
+
+    getConstraint(name)
+    {
+        let constraints = get(this.constraints);
+
+        for (let constraint of constraints)
+        {
+            if (constraint.name == name)
+            {
+                return constraint;
+            }
+        }
+
+        return null;
+    }
+
+    hasConstraint(name)
+    {
+        return this.getConstraint(name) != null;
+    }
+
 }
 
 export const sketch = new Sketch();
 
 // Set up the test elements
 
-sketch.addEntity(new Point("A", 0, 0));
-sketch.addEntity(new Point("B", 1, 2));
+let pointA = sketch.addEntity(new Point("A", 0, 0));
+let pointB = sketch.addEntity(new Point("B", 1, 2));
 
 let line = new Line("Line 0", -2, -1, -1, 1);
 line.construction = true;
 
 sketch.addEntity(line)
+
+// Add the test constraints
+sketch.addConstraint(new CoincidentPoints("Test Coincident", pointA, pointB));
 
 export function select(entityname)
 {
@@ -138,19 +173,8 @@ export function clearSelection()
 
 // Actual solver code
 
-export function solve()
+// DO NOT MODIFY THE SKETCH IN BETWEEN STEPS! IT WILL BREAK!
+export function* solveStepped()
 {
-    // Solve as much as we can before we use Newton's Method
 
-    // Set all elements to unsolved
-    // for (let entity of sketch.entities)
-    // {
-        
-    //     for (let data in entity.data)
-    //     {
-    //         //data.solved = false;
-    //     }
-    // }
-
-    // Set all constraints to unsolved
 }

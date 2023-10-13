@@ -11,7 +11,7 @@
 
     function onClick(event)
     {
-        solver.select(entity.name);
+        solver.select(entity.address);
 
         event.stopPropagation();
     }

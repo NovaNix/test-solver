@@ -22,7 +22,7 @@
 
     function onClick(event)
     {
-        solver.select(entity.fullName);
+        solver.select(entity.address);
 
         event.stopPropagation();
     }

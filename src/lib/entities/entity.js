@@ -1,19 +1,49 @@
 import { writable } from 'svelte/store';
+import {sketch} from "../solver/solver.js";
 
+/**
+ * @typedef Addressable
+ * @property {string} address
+ */
+
+/**
+ * @implements {Addressable}
+ */
 export class FloatData
 {
+    /** @type {Entity} */
+    parent;
+
+    /** @type {string} */
+    name;
+
     /** @type {number} */
     value;
 
     solved = false;
     fixed = false;
 
-    constructor(value)
+    /**
+     * 
+     * @param {Entity} parent The entity this data belongs to
+     * @param {number} value 
+     */
+    constructor(parent, name, value)
     {
+        this.parent = parent;
+        this.name = name;
         this.value = value;
+    }
+
+    get address()
+    {
+        return this.parent.address + ":" + this.name;
     }
 }
 
+/**
+ * @implements {Addressable}
+ */
 export class Entity
 {
     // The parent entity of this entity. If this is a top-level entity, this will be null
@@ -45,11 +75,11 @@ export class Entity
         this.data = {};
     }
 
-    get fullName()
+    get address()
     {
         if (this.parent)
         {
-            return this.parent.fullName + "." + this.name;
+            return this.parent.address + "." + this.name;
         }
         else
         {
@@ -85,6 +115,66 @@ export class Entity
         {
             this.data[valueName].fixed = value;
         }
+    }
+
+}
+
+/**
+ * A reference to an entity or some data. This is used to avoid having to pass around the actual entity object.
+ * Basically just a wrapper for a string containing the address of the thing
+ */
+export class Ref
+{
+    /** @type {string} */
+    address;
+
+    /**
+     * @param {Addressable | string} thing The thing to store a reference to 
+     */
+    constructor(thing)
+    {
+        if (typeof thing == "string")
+        {
+            this.address = thing;
+        }
+
+        else
+        {
+            this.address = thing.address;
+        }
+    }
+
+    resolve()
+    {
+        let [entityName, valueName] = this.address.split(":");
+
+        let entity = sketch.getEntity(entityName);
+
+        if (valueName == null)
+        {
+            return entity;
+        }
+
+        return entity.data[valueName];
+    }
+
+    /**
+     * Same as resolve, but uses a map of all of the entities and data
+     * @param {Map<string, Addressable>} map 
+     */
+    resolveMap(map)
+    {
+        return map.get(this.address);
+    }
+
+    get value()
+    {
+        return this.resolve().value;
+    }
+
+    isValid()
+    {
+        return this.resolve() != null;
     }
 
 }
