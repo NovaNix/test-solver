@@ -48,7 +48,9 @@ on:mouseenter={onMouseEnter}
 on:mouseleave={onMouseLeave}
 >
     <svelte:fragment slot="main">
-        <span class="icon entity-icon material-symbols-outlined">{icons[entity.type]}</span><p class="entity-name">{entity.name}</p>
+        <span class="icon entity-icon material-symbols-outlined">{icons[entity.type]}</span>
+        <p class="entity-name">{entity.name}</p>
+        {#if entity.solved}<span class="solved-icon icon material-symbols-outlined">check_circle</span>{/if}
     </svelte:fragment>
     <svelte:fragment slot="children">
         {#each Object.entries(entity.data) as [name, data]}
@@ -90,14 +92,9 @@ on:mouseleave={onMouseLeave}
         color: #00D4A3;
     }
 
-    /* summary span {
-        display: inline-block;
-        line-height: 22px;
-        height: 22px;
-    } */
+    .solved-icon {
+        color: lime;
+        margin-left: auto;
+    }
 
-    /* summary * {
-        display: inline-block;
-        height: 100%;
-    } */
 </style>

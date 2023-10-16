@@ -51,7 +51,10 @@ export class Constraint
 		return this.entities.every(entity => entity.isValid());
 	}
 
-
+	get solved()
+	{
+		return false;
+	}
 }
 
 /**
@@ -87,10 +90,21 @@ export class ConstraintFunction
 		throw new Error("The constraint derivative function was not overridden!")
 	}
 
-
+	/**
+	 * @param {string} variable The address of the variable to solve for
+	 * @returns {number} The solved value of the variable 
+	 */
 	solveFor(variable)
 	{
 		throw new Error("The constraint solveFor function was not overridden!")
+	}
+
+	/**
+	 * @returns {Ref[]} The data used by the constraint function
+	 */
+	getData()
+	{
+		throw new Error("The constraint getData function was not overridden!")
 	}
 }
 
@@ -107,8 +121,8 @@ export class DataEqualFunction extends ConstraintFunction
 	{
 		super(parent);
 
-		this.data1 = data1;
-		this.data2 = data2;
+		this.data1 = new Ref(data1);
+		this.data2 = new Ref(data2);
 	}
 
 	solve()
@@ -145,7 +159,9 @@ export class DataEqualFunction extends ConstraintFunction
 			return null;
 		}
 	}
-}
-{
 
+	getData()
+	{
+		return [this.data1, this.data2];
+	}
 }

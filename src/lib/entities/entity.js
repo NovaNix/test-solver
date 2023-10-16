@@ -20,8 +20,8 @@ export class FloatData
     /** @type {number} */
     value;
 
-    solved = false;
-    fixed = false;
+    #solved = false;
+    #fixed = false;
 
     /**
      * 
@@ -38,6 +38,31 @@ export class FloatData
     get address()
     {
         return this.parent.address + ":" + this.name;
+    }
+
+    get fixed()
+    {
+        return this.#fixed;
+    }
+
+    set fixed(value)
+    {
+        this.#fixed = value;
+
+        this.#solved = this.#fixed;
+    }
+
+    get solved()
+    {
+        return this.#solved;
+    }
+
+    set solved(value)
+    {
+        if (!this.#fixed)
+        {
+            this.#solved = value;
+        }
     }
 }
 
@@ -115,6 +140,19 @@ export class Entity
         {
             this.data[valueName].fixed = value;
         }
+    }
+
+    set solved(value)
+    {
+        for (let valueName in this.data)
+        {
+            this.data[valueName].solved = value;
+        }
+    }
+
+    get solved()
+    {
+        return Object.values(this.data).every(value => value.solved);
     }
 
 }

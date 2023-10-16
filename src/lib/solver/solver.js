@@ -1,10 +1,12 @@
 import {Entity} from "../entities/entity.js"
 import {Point} from "../entities/point.js"
 import {Line} from "../entities/line.js"
+import {Circle} from "../entities/circle.js"
 import { writable } from 'svelte/store';
 import { get } from 'svelte/store'
-import {Constraint} from "../constraints/constraint.js"
+import {Constraint, ConstraintFunction} from "../constraints/constraint.js"
 import { CoincidentPoints } from "../constraints/coincident.js";
+import { FloatData } from "../entities/entity.js";
 
 export const SELECT_MODE_NEW = 0;
 export const SELECT_MODE_ADD = 1;
@@ -22,6 +24,9 @@ export class Sketch
 
     /** @type {import("svelte/store").Writable<Constraint[]>} */
     tempConstraints = writable([]);
+
+    // Map containing all entities, and sub entities
+    entityMap = new Map();
 
     /**
      * Causes Svelte to redraw the sketch
@@ -46,36 +51,35 @@ export class Sketch
             return items;
         });
 
+        this.#addEntityMap(entity);
+
         return entity; // Returns the added entity for chaining
+    }
+
+    /**
+     * Recursively adds the entity and all of the sub entities to the entity map
+     * @param {Entity} entity 
+     */
+    #addEntityMap(entity)
+    {
+        this.entityMap.set(entity.address, entity);
+
+        console.log("Adding entity " + entity.address)
+
+        // add the sub entities to the map
+        for (let sub of Object.values(entity.data))
+        {
+            if (sub instanceof Entity)
+            {
+                this.#addEntityMap(sub);
+            }
+        }
+
     }
 
     getEntity(address)
     {
-        let entities = get(this.entities);
-
-        let nameList = address.split(".");
-
-        let entityList = [...entities];
-
-        while (entityList.length > 0)
-        {
-            let entity = entityList.shift();
-
-            if (entity.name == nameList[0])
-            {
-                nameList.shift(); // Remove the found name from the list
-
-                if (nameList.length == 0)
-                {
-                    return entity;
-                }
-
-                entityList = Object.values(entity.data); // Set the entityList to the data of the found entity
-            }   
-        }
-
-        // No element was found...
-        return null;
+        return this.entityMap.get(address);
     }
 
     hasEntity(name)
@@ -122,15 +126,20 @@ export const sketch = new Sketch();
 // Set up the test elements
 
 let pointA = sketch.addEntity(new Point("A", 0, 0));
+pointA.fixed = true;
 let pointB = sketch.addEntity(new Point("B", 1, 2));
+pointB.fixed = true;
 
 let line = new Line("Line 0", -2, -1, -1, 1);
 line.construction = true;
 
 sketch.addEntity(line)
 
+sketch.addEntity(new Circle("Circle 0", 1, 1, 2));
+
 // Add the test constraints
-sketch.addConstraint(new CoincidentPoints("Test Coincident", pointA, pointB));
+sketch.addConstraint(new CoincidentPoints("Test Coincident 1", pointA, line.p1));
+sketch.addConstraint(new CoincidentPoints("Test Coincident 2", pointB, line.p2));
 
 export function select(entityname)
 {
@@ -173,8 +182,96 @@ export function clearSelection()
 
 // Actual solver code
 
-// DO NOT MODIFY THE SKETCH IN BETWEEN STEPS! IT WILL BREAK!
-export function* solveStepped()
+let solveSession = solve();
+
+// A wrapper for the solve function
+export function solveStepped()
 {
+    let next = solveSession.next();
+    
+    if (next.done)
+    {
+        solveSession = solve();
+    }
+
+    sketch.updateDisplay();
+}
+
+// Solves the sketch in a stepped manner
+export function* solve()
+{
+    // Set all of the entities to unsolved
+    let entities = get(sketch.entities);
+
+    for (let entity of entities)
+    {
+        entity.solved = false; // This should also update all of the sub entities
+    }
+
+    // Solve all constraint functions with one missing value
+
+    let constraints = [...get(sketch.constraints)];
+    /** @type {ConstraintFunction[]} */
+    let functions = [];
+
+    constraints.forEach(constraint => functions.push(...constraint.functions));
+
+    let simpleSolved = false;
+
+    console.log("Started simple solve");
+
+    while (!simpleSolved)
+    {
+        let progressed = false;
+
+        for (let func of functions)
+        {
+            let unknown = func.getData();
+
+            for (let data of unknown)
+            {
+                if (data.resolve().solved)
+                {
+                    // Remove the known value from the unknown list
+                    unknown.splice(unknown.indexOf(data), 1);
+                }
+            }
+
+            // If there's only one unknown value, we can solve the constraint function!
+            if (unknown.length == 1)
+            {
+                console.log(`Found a solvable constraint function! (Constraint:  ${func.parent.name})`);
+
+                /** @type {FloatData} */
+                let data = unknown[0].resolve();
+
+                let solvedValue = func.solveFor(data.address);
+
+                data.value = solvedValue;
+
+                data.solved = true;
+
+                progressed = true;
+
+                // Remove the constraint function from the list
+                functions.splice(functions.indexOf(func), 1);
+
+                yield;
+            }
+
+            if (unknown.length == 0)
+            {
+                // The constraint is solved!
+                // Remove the constraint function from the list
+                functions.splice(functions.indexOf(func), 1);
+            }
+        }
+
+        simpleSolved = !progressed;
+    }
+
+    console.log("Finished simple solve");
+    console.log("Remaining constraint functions: " + functions.length);
+
 
 }
