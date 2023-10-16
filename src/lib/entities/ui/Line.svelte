@@ -34,7 +34,7 @@
     x2={entity.x2} 
     y1={entity.y1} 
     y2={entity.y2} 
-    class="line-element"
+    class="entity"
     class:construction={entity.construction}
     class:selected={$selected}
     class:hover={$hover}
@@ -42,7 +42,7 @@
 <!-- svelte-ignore a11y-no-static-element-interactions -->
 <!-- svelte-ignore a11y-click-events-have-key-events -->
 <line
-    class="line-collision"
+    class="collision"
     on:click={onClick}
     on:mouseenter={onMouseEnter}
     on:mouseleave={onMouseLeave}
@@ -57,29 +57,5 @@
 
 
 <style>
-    .line-element {
-        stroke: var(--entity-color);
-        stroke-width: var(--line-thickness);
-    }
 
-    .line-element.construction {
-        stroke-dasharray: 5;
-        /* stroke: var(--construction-color); */
-        stroke-opacity: var(--construction-opacity);
-    }
-
-    .line-element.selected {
-        stroke: var(--entity-selected);
-    }
-
-    .line-element.hover {
-        stroke: var(--entity-hover);
-    }
-
-    .line-collision {
-        stroke-width: calc(5 * var(--line-thickness));
-        stroke: var(--collision-overlay-color);
-        stroke-opacity: var(--collision-overlay-opacity);
-        stroke-linecap: round;
-    }
 </style>

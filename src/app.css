@@ -143,3 +143,33 @@ svg * {
     color: #C3C3C3;
     /* aspect-ratio: 1; */
 }
+
+/* Common Entity Styles */
+
+.entity {
+    /* fill: var(--entity-color); */
+    fill: none;
+    stroke: var(--entity-color);
+    stroke-width: var(--line-thickness);
+}
+
+.entity.construction {
+    stroke-dasharray: 5;
+    stroke-opacity: var(--construction-opacity);
+}
+
+.entity.selected {
+    stroke: var(--entity-selected);
+}
+
+.entity.hover {
+    stroke: var(--entity-hover);
+}
+
+.collision {
+    fill: none;
+    stroke-width: calc(5 * var(--line-thickness));
+    stroke: var(--collision-overlay-color);
+    stroke-opacity: var(--collision-overlay-opacity);
+    stroke-linecap: round;
+}
