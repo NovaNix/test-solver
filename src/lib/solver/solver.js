@@ -261,6 +261,10 @@ export function* solve()
 
             if (unknown.length == 0)
             {
+                // All of the values are known! We need to make sure this constraint is solved before we remove it
+                if (!func.isMet())
+                    throw new Error("All of the values of the function are known, but the function is not met!");
+
                 // The constraint is solved!
                 // Remove the constraint function from the list
                 functions.splice(functions.indexOf(func), 1);

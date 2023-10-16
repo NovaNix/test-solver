@@ -35,6 +35,10 @@ export class CoincidentPoints extends Coincident
 
 		this.functions.push(new DataEqualFunction(this, p1.data["x"].address, p2.data["x"].address));
 		this.functions.push(new DataEqualFunction(this, p1.data["y"].address, p2.data["y"].address));
-		// this.functions.push(new CoincidentPointsFunction(this));
 	}
+}
+
+export class CoincidentPointCircle
+{
+	
 }

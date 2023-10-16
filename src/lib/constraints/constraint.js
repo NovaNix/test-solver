@@ -1,3 +1,4 @@
+const nerdamer = require("nerdamer/all.min");
 import { Entity, Ref, FloatData } from "../entities/entity";
 
 export class Constraint
@@ -46,14 +47,14 @@ export class Constraint
 	/**
 	 * @returns {boolean} Whether or not the constraint has all of the entities it needs
 	 */
-	get isComplete()
+	isComplete()
 	{
 		return this.entities.every(entity => entity.isValid());
 	}
 
-	get solved()
+	isMet()
 	{
-		return false;
+		return this.functions.every(func => func.isMet());
 	}
 }
 
@@ -78,6 +79,11 @@ export class ConstraintFunction
 	solve()
 	{
 		throw new Error("The constraint function was not overridden!")
+	}
+
+	isMet()
+	{
+		return Math.abs(this.solve()) < Number.EPSILON;
 	}
 
 	/**
@@ -110,58 +116,146 @@ export class ConstraintFunction
 
 // Common Constraint Functions
 
-export class DataEqualFunction extends ConstraintFunction
+export class GenericCFunction extends ConstraintFunction
 {
-	/** @type {Ref} */
-	data1;
-	/** @type {Ref} */
-	data2;
+	/** @type {Ref[]} */
+	data;
 
-	constructor(parent, data1, data2)
+	/** @type {import("nerdamer").Expression} */
+	expression;
+
+	map;
+	reverseMap;
+
+	/**
+	 * @param {Constraint} parent 
+	 * @param {string} func 
+	 * @param {*} map An object connecting the variables in the function to the references of the data. 
+	 */
+	constructor(parent, func, map)
 	{
 		super(parent);
+		this.map = map;
 
-		this.data1 = new Ref(data1);
-		this.data2 = new Ref(data2);
+		this.expression = nerdamer(func);
+
+		this.data = [];
+
+		this.reverseMap = {};
+		for (const [key, value] of Object.entries(map))
+		{
+			this.reverseMap[value.address] = key;
+		}
 	}
 
 	solve()
 	{
-		return this.data1.value - this.data2.value;
+		// Create the value object
+		let values = {};
+
+		
 	}
 
 	solveDerivative(changingVar)
 	{
-		switch (changingVar)
-		{
-			case this.data1.address:
-				return 1;
-			case this.data2.address:
-				return -1;
-			default:
-				return 0;
-		}
-
+		
 	}
 
 	solveFor(variable)
 	{
-		if (variable == this.data1.address)
+		let rearranged = this.expression.solveFor(this.reverseMap[variable]);
+
+		
+	}
+
+	#getVarValues()
+	{
+		let values = {};
+
+		for (const [key, value] of Object.entries(this.map))
 		{
-			return this.data2.value;
-		}
-		else if (variable == this.data2.address)
-		{
-			return this.data1.value;
-		}
-		else
-		{
-			return null;
+			if (value instanceof Ref)
+			{
+				values[key] = value.value;
+			}
+			
+			else
+			{
+				values[key] = value;
+			}
 		}
 	}
 
 	getData()
 	{
-		return [this.data1, this.data2];
+		return this.data;
 	}
 }
+
+export class DataEqualFunction extends GenericCFunction
+{
+	constructor(parent, data1, data2)
+	{
+		super(parent, "a=b", {
+			a: new Ref(data1),
+			b: new Ref(data2)
+		});
+
+	}
+}
+
+// export class DataEqualFunction extends ConstraintFunction
+// {
+// 	/** @type {Ref} */
+// 	data1;
+// 	/** @type {Ref} */
+// 	data2;
+
+// 	constructor(parent, data1, data2)
+// 	{
+// 		super(parent);
+
+// 		this.data1 = new Ref(data1);
+// 		this.data2 = new Ref(data2);
+// 	}
+
+// 	solve()
+// 	{
+// 		return this.data1.value - this.data2.value;
+// 	}
+
+// 	solveDerivative(changingVar)
+// 	{
+// 		switch (changingVar)
+// 		{
+// 			case this.data1.address:
+// 				return 1;
+// 			case this.data2.address:
+// 				return -1;
+// 			default:
+// 				return 0;
+// 		}
+
+// 	}
+
+// 	solveFor(variable)
+// 	{
+// 		if (variable == this.data1.address)
+// 		{
+// 			return this.data2.value;
+// 		}
+// 		else if (variable == this.data2.address)
+// 		{
+// 			return this.data1.value;
+// 		}
+// 		else
+// 		{
+// 			return null;
+// 		}
+// 	}
+
+// 	getData()
+// 	{
+// 		return [this.data1, this.data2];
+// 	}
+// }
