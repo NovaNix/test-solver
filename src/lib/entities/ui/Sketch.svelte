@@ -1,7 +1,8 @@
 <script context="module">
     const typeComponents = {
         "point": Point,
-        "line": Line
+        "line": Line,
+        "circle": Circle
     };
 </script>
 
@@ -9,6 +10,7 @@
     import {Sketch} from "../../solver/solver.js"
     import Point from "./Point.svelte"
     import Line from "./Line.svelte"
+    import Circle from "./Circle.svelte"
 
 
 
