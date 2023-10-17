@@ -46,6 +46,7 @@
     class:construction={entity.construction}
     class:selected={$selected}
     class:hover={$hover}
+    class:fully-constrained={entity.solved}
 
     cx={entity.x}
     cy={entity.y}

@@ -205,7 +205,7 @@ export function* solve()
 
     for (let entity of entities)
     {
-        entity.solved = false; // This should also update all of the sub entities
+        entity.clearSolveInfo();
     }
 
     // Solve all constraint functions with one missing value
@@ -245,13 +245,24 @@ export function* solve()
                 /** @type {FloatData} */
                 let data = unknown[0].resolve();
 
-                let solvedValue = func.solveFor(data.address);
+                let potentialValues = func.solveFor(data.address);
 
-                data.value = solvedValue;
+                if (data.potentialValues == null)
+                {
+                    data.potentialValues = potentialValues;
+                }
 
-                data.solved = true;
+                // Get the intersection between the newly calculated potential values and the previous potential values
+                data.potentialValues = data.potentialValues.filter(x => potentialValues.includes(x));
 
-                progressed = true;
+                if (data.potentialValues.length == 1)
+                {
+                    data.value = data.potentialValues[0];
+
+                    data.solved = true;
+
+                    progressed = true;
+                }
 
                 // Remove the constraint function from the list
                 functions.splice(functions.indexOf(func), 1);
@@ -261,6 +272,8 @@ export function* solve()
 
             if (unknown.length == 0)
             {
+                console.log("Constraint function has all variables known! Checking if met.");
+                console.log("Result: " + func.solve());
                 // All of the values are known! We need to make sure this constraint is solved before we remove it
                 if (!func.isMet())
                     throw new Error("All of the values of the function are known, but the function is not met!");

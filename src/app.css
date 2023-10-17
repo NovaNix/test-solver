@@ -30,6 +30,7 @@ html {
     --entity-hover: #FFD000;
 
     --loose-entity-color: #00A5FF;
+    --loose-point-color: #0079bb;
     --solve-error-color: #DB2512;
 
     --regular-point-size: 6; /* In pixels */
@@ -45,7 +46,9 @@ html {
     --number-input-background: #545454;
 
     --collision-overlay-color: #FF0000;
-    --collision-overlay-opacity: 0.2; /* Set to 0 to hide collisions */
+    /* Set to 0 to hide collisions */
+    /* --collision-overlay-opacity: 0.2;  */
+    --collision-overlay-opacity: 0;
 
     --sidebar-color: #303030;
 }
@@ -67,19 +70,16 @@ svg * {
 #grid path {
     stroke: var(--grid-line);
     stroke-opacity: var(--grid-line-opacity);
-    /* stroke-width: calc(var(--axis-thickness) / var(--view-scale)); */
     stroke-width: var(--axis-thickness)
 }
 
 #x-axis {
     stroke: var(--x-axis-color);
-    /* stroke-width: calc(var(--axis-thickness) / var(--view-scale)); */
     stroke-width: var(--axis-thickness)
 }
 
 #y-axis {
     stroke: var(--y-axis-color);
-    /* stroke-width: calc(var(--axis-thickness) / var(--view-scale)); */
     stroke-width: var(--axis-thickness)
 }
 
@@ -110,9 +110,7 @@ svg * {
 
 .tree> button:nth-of-type(even)
 {
-    /* background-color: rgba(255, 255, 255, 0.015686); */
     background-color: color-mix(in srgb, var(--sidebar-color), white 1.5686%)
-    /* background-color: white; */
 }
 
 .tree-cell {
@@ -149,8 +147,12 @@ svg * {
 .entity {
     /* fill: var(--entity-color); */
     fill: none;
-    stroke: var(--entity-color);
+    stroke: var(--loose-entity-color);
     stroke-width: var(--line-thickness);
+}
+
+.entity.fully-constrained {
+    stroke: var(--entity-color);
 }
 
 .entity.construction {

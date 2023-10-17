@@ -38,6 +38,7 @@
     class:construction={entity.construction}
     class:selected={$selected}
     class:hover={$hover}
+    class:fully-constrained={entity.solved}
     />
 <!-- svelte-ignore a11y-no-static-element-interactions -->
 <!-- svelte-ignore a11y-click-events-have-key-events -->

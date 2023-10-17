@@ -28,27 +28,44 @@ function onMouseLeave(event)
 
 </script>
 
-<!-- svelte-ignore a11y-no-static-element-interactions -->
-<!-- svelte-ignore a11y-click-events-have-key-events -->
+
 <use 
     class="point" 
     class:selected={$selected}
     class:hover={$hover}
+    class:fully-constrained={entity.solved}
     href={entity.construction ? "#construction-point" : "#regular-point"}
     x={entity.x}
     y={entity.y}
+    
+></use>
+<!-- svelte-ignore a11y-no-static-element-interactions -->
+<!-- svelte-ignore a11y-click-events-have-key-events -->
+<circle
+    class="collision"
+    x={entity.x}
+    y={entity.y}
+    r={1}
+
+    style={`--point-size: var(--regular-point-size);`}
+
     on:click={onClick}
     on:mouseenter={onMouseEnter}
     on:mouseleave={onMouseLeave}
-></use>
+/>
 
 <style>
     .point {
         stroke-width: var(--point-stroke-size);
-        stroke: var(--point-color);
-        fill: var(--point-color);
+        stroke: var(--loose-point-color);
+        fill: var(--loose-point-color);
         vector-effect: non-scaling-stroke;
 
+    }
+
+    .point.fully-constrained {
+        stroke: var(--point-color);
+        fill: var(--point-color);
     }
 
     .point.selected {
@@ -60,5 +77,17 @@ function onMouseLeave(event)
     .point.hover {
         stroke: var(--point-hover);
         fill: var(--point-hover);
+    }
+
+    .collision {
+        /* fill: var(); */
+        fill: var(--collision-overlay-color);
+        fill-opacity: var(--collision-overlay-opacity);
+
+        transform: 
+	        scale(var(--inverse-zoom)) /* Camera to World */
+	        scale(var(--inverse-ppu)) /* World to Screen */
+            scale(var(--point-size)) /* Convert point size to view space, scale it by that value */
+	        ;
     }
 </style>

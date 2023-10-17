@@ -1,6 +1,10 @@
 import { Ref } from "../entities/entity.js";
-import {Constraint, ConstraintFunction, DataEqualFunction} from "./constraint.js";
+import {Constraint, ConstraintFunction, GenericCFunction, DataEqualFunction} from "./constraint.js";
 import {Point} from "../entities/point.js";
+
+export const DISTANCE_REGULAR = 0;
+export const DISTANCE_HORIZONTAL = 1;
+export const DISTANCE_VERTICAL = 2;
 
 class Dimension extends Constraint 
 {
@@ -10,7 +14,7 @@ class Dimension extends Constraint
 	}
 }
 
-class Length extends Dimension
+class Distance extends Dimension
 {
     /** @type {Ref} */
     p1;
@@ -19,7 +23,9 @@ class Length extends Dimension
     /** @type {number} */
     length;
 
-    constructor(name, p1, p2, length)
+    #disttype;
+
+    constructor(name, p1, p2, length, distanceType)
     {
         super(name, "length");
 
@@ -31,25 +37,74 @@ class Length extends Dimension
         this.entities.push(this.p1);
         this.entities.push(this.p2);
 
+        this.distanceType = distanceType; // This also adds the functions
+    }
 
+    set distanceType(type)
+    {
+        this.#disttype = type;
 
+        this.functions = [];
+
+        switch (type)
+        {
+            case DISTANCE_REGULAR:
+                this.functions.push(new DistanceFunction(this, this.p1, this.p2, this.length));
+                break;
+            case DISTANCE_HORIZONTAL:
+                this.functions.push(new DistanceHFunction(this, this.p1, this.p2, this.length));
+                break;
+            case DISTANCE_VERTICAL:
+                this.functions.push(new DistanceVFunction(this, this.p1, this.p2, this.length));
+                break;
+        }
+    }
+
+    get distanceType()
+    {
+        return this.#disttype;
     }
 }
 
-class LengthFunction extends ConstraintFunction
+class DistanceFunction extends GenericCFunction
 {
-    /** @type {Ref} */
-    p1;
-    /** @type {Ref} */
-    p2;
 
     constructor(parent, p1, p2, length)
     {
-        super(parent);
+        super(parent, "0=l-sqrt((x-a)^2 + (y-b)^2)", {
+            l: length,
+            a: new Ref(p1.x),
+            b: new Ref(p1.y),
+            x: new Ref(p2.x),
+            y: new Ref(p2.y)
+        });
+    }   
+}
 
-        this.p1 = p1;
-        this.p2 = p2;
-    }
+class DistanceHFunction extends GenericCFunction 
+{
+    constructor(parent, p1, p2, length)
+    {
+        super(parent, "0=l-abs(a-x)", {
+            l: length,
+            a: new Ref(p1.x),
+            b: new Ref(p1.y),
+            x: new Ref(p2.x),
+            y: new Ref(p2.y)
+        });
+    } 
+}
 
-    
+class DistanceVFunction extends GenericCFunction 
+{
+    constructor(parent, p1, p2, length)
+    {
+        super(parent, "0=l-abs(b-y)", {
+            l: length,
+            a: new Ref(p1.x),
+            b: new Ref(p1.y),
+            x: new Ref(p2.x),
+            y: new Ref(p2.y)
+        });
+    } 
 }

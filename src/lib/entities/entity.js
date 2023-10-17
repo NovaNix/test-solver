@@ -23,6 +23,9 @@ export class FloatData
     #solved = false;
     #fixed = false;
 
+    /** @type {number[]} */
+    potentialValues;
+
     /**
      * 
      * @param {Entity} parent The entity this data belongs to
@@ -63,6 +66,12 @@ export class FloatData
         {
             this.#solved = value;
         }
+    }
+
+    clearSolveInfo()
+    {
+        this.solved = false;
+        this.potentialValues = null;
     }
 }
 
@@ -153,6 +162,19 @@ export class Entity
     get solved()
     {
         return Object.values(this.data).every(value => value.solved);
+    }
+
+    /**
+     * Clears all of the previous solve info for all of this entity's data
+     */
+    clearSolveInfo()
+    {
+        this.solved = false;
+
+        for (let value of Object.values(this.data))
+        {
+            value.clearSolveInfo();
+        }
     }
 
 }

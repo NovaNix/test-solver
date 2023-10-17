@@ -1,4 +1,4 @@
-const nerdamer = require("nerdamer/all.min");
+import nerdamer from "nerdamer/all.min";
 import { Entity, Ref, FloatData } from "../entities/entity";
 
 export class Constraint
@@ -98,7 +98,7 @@ export class ConstraintFunction
 
 	/**
 	 * @param {string} variable The address of the variable to solve for
-	 * @returns {number} The solved value of the variable 
+	 * @returns {number[]} The solved value of the variable 
 	 */
 	solveFor(variable)
 	{
@@ -121,8 +121,10 @@ export class GenericCFunction extends ConstraintFunction
 	/** @type {Ref[]} */
 	data;
 
-	/** @type {import("nerdamer").Expression} */
-	expression;
+	// /** @type {import("nerdamer").Expression} */
+	// expression;
+	/** @type {string} */
+	func;
 
 	map;
 	reverseMap;
@@ -137,35 +139,61 @@ export class GenericCFunction extends ConstraintFunction
 		super(parent);
 		this.map = map;
 
-		this.expression = nerdamer(func);
+		//this.expression = nerdamer(func);
+
+		this.func = func;
 
 		this.data = [];
-
 		this.reverseMap = {};
 		for (const [key, value] of Object.entries(map))
 		{
+			this.data.push(value);
 			this.reverseMap[value.address] = key;
 		}
 	}
 
 	solve()
 	{
-		// Create the value object
-		let values = {};
+		let values = this.#getVarValues();
 
-		
+		// Solve the expression
+		return Number(nerdamer(this.func, values).evaluate().text());
 	}
 
 	solveDerivative(changingVar)
 	{
-		
+		let values = this.#getVarValues();
+		return Number(nerdamer(this.func).diff(this.reverseMap[changingVar]).evaluate(values).text());
 	}
 
 	solveFor(variable)
 	{
-		let rearranged = this.expression.solveFor(this.reverseMap[variable]);
+		console.log(`Solving function "${this.func}" for variable "${this.reverseMap[variable]}"`);
 
-		
+		/** @type {import("nerdamer").Expression[]} */
+		let rearranged = nerdamer(this.func).solveFor(this.reverseMap[variable]);
+
+		let values = this.#getVarValues();
+
+		console.log(values);
+
+		let results = [];
+
+		for (let eq of rearranged)
+		{
+			console.log(`Solving equation "${eq.text()}"`);
+
+			// @ts-ignore
+			let result = eq.evaluate(values).text();
+
+			console.log(`Result: ${result}`);
+
+			let numresult = Number(result);
+			if (!Number.isNaN(numresult))
+				results.push(numresult);
+		}
+
+		return results;
 	}
 
 	#getVarValues()
@@ -184,6 +212,8 @@ export class GenericCFunction extends ConstraintFunction
 				values[key] = value;
 			}
 		}
+
+		return values;
 	}
 
 	getData()

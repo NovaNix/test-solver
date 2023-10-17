@@ -38,7 +38,7 @@ export class CoincidentPoints extends Coincident
 	}
 }
 
-export class CoincidentPointCircle
+export class CoincidentPointCircle extends Coincident
 {
 	
 }
