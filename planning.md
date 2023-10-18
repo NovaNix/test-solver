@@ -110,4 +110,4 @@ l1.root colinear with l2 && l2.root colinear with l1
 
 ## Midpoint (lineseg l1, point p1)
 
-p1 = (l1.length/2 * l1.dir) + l1.start 
+p1 = (l1.p1 + l1.p2) / 2
