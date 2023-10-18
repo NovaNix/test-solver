@@ -89,7 +89,5 @@ function onMouseLeave(event)
 	        scale(var(--inverse-ppu)) /* World to Screen */
             scale(var(--point-size)) /* Convert point size to view space, scale it by that value */
 	        ;
-
-        z-index: 1000;
     }
 </style>
