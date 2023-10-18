@@ -237,4 +237,9 @@ export class Ref
         return this.resolve() != null;
     }
 
+    toString()
+    {
+        return this.address;
+    }
+
 }

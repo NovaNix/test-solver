@@ -163,7 +163,7 @@ export class GenericCFunction extends ConstraintFunction
 	solveDerivative(changingVar)
 	{
 		let values = this.#getVarValues();
-		return Number(nerdamer(this.func).diff(this.reverseMap[changingVar]).evaluate(values).text());
+		return Number(nerdamer.diff(nerdamer(this.func), this.reverseMap[changingVar]).evaluate(values).text());
 	}
 
 	solveFor(variable)
@@ -226,7 +226,7 @@ export class DataEqualFunction extends GenericCFunction
 {
 	constructor(parent, data1, data2)
 	{
-		super(parent, "a=b", {
+		super(parent, "a-b", {
 			a: new Ref(data1),
 			b: new Ref(data2)
 		});

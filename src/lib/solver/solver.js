@@ -5,8 +5,10 @@ import {Circle} from "../entities/circle.js"
 import { writable } from 'svelte/store';
 import { get } from 'svelte/store'
 import {Constraint, ConstraintFunction} from "../constraints/constraint.js"
-import { CoincidentPoints } from "../constraints/coincident.js";
-import { FloatData } from "../entities/entity.js";
+import { CoincidentPoints, CoincidentPointCircle } from "../constraints/coincident.js";
+import { FloatData, Ref } from "../entities/entity.js";
+import nerdamer from "nerdamer/all.min";
+import * as matmath from "../utils/matmath.js";
 
 export const SELECT_MODE_NEW = 0;
 export const SELECT_MODE_ADD = 1;
@@ -130,16 +132,23 @@ pointA.fixed = true;
 let pointB = sketch.addEntity(new Point("B", 1, 2));
 pointB.fixed = true;
 
+let pointC = sketch.addEntity(new Point("C", 2, 1));
+pointC.fixed = true;
+
 let line = new Line("Line 0", -2, -1, -1, 1);
 line.construction = true;
 
 sketch.addEntity(line)
 
-sketch.addEntity(new Circle("Circle 0", 1, 1, 2));
+let circle = sketch.addEntity(new Circle("Circle 0", 1, 1, 2));
 
 // Add the test constraints
 sketch.addConstraint(new CoincidentPoints("Test Coincident 1", pointA, line.p1));
 sketch.addConstraint(new CoincidentPoints("Test Coincident 2", pointB, line.p2));
+
+sketch.addConstraint(new CoincidentPointCircle("Test Circle Coincident 1", pointA, circle));
+sketch.addConstraint(new CoincidentPointCircle("Test Circle Coincident 2", pointB, circle));
+sketch.addConstraint(new CoincidentPointCircle("Test Circle Coincident 3", pointC, circle));
 
 export function select(entityname)
 {
@@ -226,16 +235,7 @@ export function* solve()
 
         for (let func of functions)
         {
-            let unknown = func.getData();
-
-            for (let data of unknown)
-            {
-                if (data.resolve().solved)
-                {
-                    // Remove the known value from the unknown list
-                    unknown.splice(unknown.indexOf(data), 1);
-                }
-            }
+            let unknown = func.getData().filter(x => !x.resolve().solved);
 
             // If there's only one unknown value, we can solve the constraint function!
             if (unknown.length == 1)
@@ -265,9 +265,9 @@ export function* solve()
                 }
 
                 // Remove the constraint function from the list
-                functions.splice(functions.indexOf(func), 1);
+                //functions.splice(functions.indexOf(func), 1);
 
-                yield;
+                //yield;
             }
 
             if (unknown.length == 0)
@@ -279,8 +279,11 @@ export function* solve()
                     throw new Error("All of the values of the function are known, but the function is not met!");
 
                 // The constraint is solved!
+
                 // Remove the constraint function from the list
-                functions.splice(functions.indexOf(func), 1);
+                functions.splice(functions.indexOf(func), 1); // Note: we may have to remove the constraint function earlier than this to prevent it from being solved multiple times. For now though it's fine
+
+                progressed = true;
             }
         }
 
@@ -289,6 +292,107 @@ export function* solve()
 
     console.log("Finished simple solve");
     console.log("Remaining constraint functions: " + functions.length);
+    console.log("Beginning complex solve using newton's method");
 
+    /** @type {Ref[]} */
+    let unknowns = [];
+
+    for (let func of functions)
+    {
+        func.getData().forEach(x => {
+            if (x.resolve().solved)
+                return;
+            if (unknowns.some(y => y.address === x.address))
+                return;
+
+            unknowns.push(x);
+        });
+    }
+
+    console.log("Unknowns: " + unknowns);
+
+    let solving = true;
+    let iterations = 0;
+
+    while (solving)
+    {
+        let mat = [];
+
+        // Calculate the Jacobian matrix
+
+        for (let func of functions)
+        {
+            let row = [];
+
+            for (let unknown of unknowns)
+            {
+                row.push(func.solveDerivative(unknown.address));
+            }
+
+            mat.push(row);
+        }
+
+        // Calculate the function matrix (array of rows)
+        let fmat = [];
+
+        for (let func of functions)
+        {
+            fmat.push(-func.solve());
+        }
+
+        // Move the matrices into nerdamer
+
+        let J = matmath.toNerdamerMatrix(mat);
+        let F = matmath.toNerdamerMatrix(fmat); // This needs to be transposed because all of the elements need to be a single column
+
+        console.log("Jacobian Matrix: " + J.text());
+        console.log("Function Matrix: " + F.text());
+
+        // Calculate and apply the deltas
+        /** @type {import("nerdamer").Expression} */
+        let deltas = nerdamer("invert(J)*F", {J: J.toString(), F: F.toString()});
+
+        nerdamer.setVar("D", deltas);
+
+        console.log("Deltas: " + deltas.text())
+
+        let converged = true; // While we're looping through the deltas, we might as well check if we've converged
+
+        for (let i = 0; i < unknowns.length; i++)
+        {
+            let deltaex = nerdamer(`matget(D, ${i}, 0)`);
+            let delta = Number(deltaex.text());
+
+            unknowns[i].resolve().value += delta;
+
+            if (Math.abs(delta) > Number.EPSILON)
+                converged = false;
+        }
+
+        // Check to see if converged
+        if (converged)
+        {
+            console.log("Converged!");
+
+            // Mark all of the unknowns as solved
+            unknowns.forEach(x => x.resolve().solved = true);
+
+            solving = false;
+        }
+
+        // Prepare for next loop
+
+        iterations++;
+
+        if (iterations > 100)
+        {
+            console.error("Solve failed! Too many iterations!");
+            solving = false;
+        }
+
+        yield;
+    }
 
 }
+
+// console.log(matmath.matToString([[1, 2], [3, 4]]));
