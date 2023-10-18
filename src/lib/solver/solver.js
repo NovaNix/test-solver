@@ -9,6 +9,7 @@ import { CoincidentPoints, CoincidentPointCircle } from "../constraints/coincide
 import { FloatData, Ref } from "../entities/entity.js";
 import nerdamer from "nerdamer/all.min";
 import * as matmath from "../utils/matmath.js";
+import { ColinearPoint, Midpoint } from "../constraints/lines.js";
 
 export const SELECT_MODE_NEW = 0;
 export const SELECT_MODE_ADD = 1;
@@ -44,6 +45,11 @@ export class Sketch
         });
     }
 
+    /**
+     * @template {Entity} E
+     * @param {E} entity 
+     * @returns {E}
+     */
     addEntity(entity)
     {
         console.log("Adding Entity: " + entity.name);
@@ -135,20 +141,34 @@ pointB.fixed = true;
 let pointC = sketch.addEntity(new Point("C", 2, 1));
 pointC.fixed = true;
 
-let line = new Line("Line 0", -2, -1, -1, 1);
+let line = sketch.addEntity(new Line("Line 0", -2, -1, -1, 1));
 line.construction = true;
 
-sketch.addEntity(line)
+let line2 = sketch.addEntity(new Line("Line 1", 0, 0, 1, 1));
+line2.construction = true;
+
+let mid = sketch.addEntity(new Point("Mid", 2, -3));
 
 let circle = sketch.addEntity(new Circle("Circle 0", 1, 1, 2));
 
 // Add the test constraints
+// Set up the construction Line
 sketch.addConstraint(new CoincidentPoints("Test Coincident 1", pointA, line.p1));
 sketch.addConstraint(new CoincidentPoints("Test Coincident 2", pointB, line.p2));
 
+// Set up the circle
 sketch.addConstraint(new CoincidentPointCircle("Test Circle Coincident 1", pointA, circle));
 sketch.addConstraint(new CoincidentPointCircle("Test Circle Coincident 2", pointB, circle));
 sketch.addConstraint(new CoincidentPointCircle("Test Circle Coincident 3", pointC, circle));
+
+// Set up the perpendicular chord
+sketch.addConstraint(new Midpoint("Test Midpoint 1", mid, line));
+
+sketch.addConstraint(new ColinearPoint("Test Colinear 1", mid, line2));
+sketch.addConstraint(new CoincidentPointCircle("Circle Coincident Chord 1", line2.p1, circle));
+sketch.addConstraint(new CoincidentPointCircle("Circle Coincident Chord 2", line2.p2, circle));
+
+// sketch.addConstraint()
 
 export function select(entityname)
 {
@@ -201,9 +221,11 @@ export function solveStepped()
     if (next.done)
     {
         solveSession = solve();
+        return true;
     }
 
     sketch.updateDisplay();
+    return false;
 }
 
 // Solves the sketch in a stepped manner
@@ -292,6 +314,8 @@ export function* solve()
 
     console.log("Finished simple solve");
     console.log("Remaining constraint functions: " + functions.length);
+    yield;
+
     console.log("Beginning complex solve using newton's method");
 
     /** @type {Ref[]} */
@@ -309,7 +333,8 @@ export function* solve()
         });
     }
 
-    console.log("Unknowns: " + unknowns);
+    console.log(`Remaining Functions (${functions.length}): ${functions}`);
+    console.log(`Remaining Unknowns (${unknowns.length}): ${unknowns}`);
 
     let solving = true;
     let iterations = 0;

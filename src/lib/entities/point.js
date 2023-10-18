@@ -14,11 +14,17 @@ export class Point extends Entity
 
     }
 
+    /**
+     * @returns {number}
+     */
     get x()
     {
         return this.data.x.value;
     }
 
+    /**
+     * @returns {number}
+     */
     get y()
     {
         return this.data.y.value;

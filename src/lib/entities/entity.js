@@ -4,6 +4,7 @@ import {sketch} from "../solver/solver.js";
 /**
  * @typedef Addressable
  * @property {string} address
+ * @property value
  */
 
 /**
@@ -164,6 +165,11 @@ export class Entity
         return Object.values(this.data).every(value => value.solved);
     }
 
+    get value()
+    {
+        return "ERROR";
+    }
+
     /**
      * Clears all of the previous solve info for all of this entity's data
      */
@@ -204,6 +210,9 @@ export class Ref
         }
     }
 
+    /**
+     * @returns {Addressable | any}
+     */
     resolve()
     {
         let [entityName, valueName] = this.address.split(":");
@@ -218,17 +227,9 @@ export class Ref
         return entity.data[valueName];
     }
 
-    /**
-     * Same as resolve, but uses a map of all of the entities and data
-     * @param {Map<string, Addressable>} map 
-     */
-    resolveMap(map)
-    {
-        return map.get(this.address);
-    }
-
     get value()
     {
+        // @ts-ignore
         return this.resolve().value;
     }
 
