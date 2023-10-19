@@ -1,5 +1,9 @@
 import nerdamer from "nerdamer/all.min";
 import { Entity, Ref, FloatData } from "../entities/entity";
+import { create, all } from 'mathjs'
+
+const config = { }
+const math = create(all, config)
 
 export class Constraint
 {
@@ -163,17 +167,31 @@ export class GenericCFunction extends ConstraintFunction
 
 	solveDerivative(changingVar)
 	{
+		if (this.reverseMap[changingVar] == undefined)
+			return 0;
+
 		let values = this.#getVarValues();
 
-		let derivative = nerdamer.diff(nerdamer(this.func), this.reverseMap[changingVar]);
+		// let derivative = nerdamer.diff(nerdamer(this.func), this.reverseMap[changingVar]);
+
+		// console.log(`Solving function ${this.func} for derivative ${this.reverseMap[changingVar]}`);
+		// console.log(`Derivative: ${derivative.text()}`);
+
+		// console.log(values);
+
+		// let result = Number(derivative.evaluate(values).text())
+
+		// console.log(`Result: ${result}`);
+
+		// return result;
+
+		let f = math.parse(this.func);
+		let derivative = math.derivative(f, this.reverseMap[changingVar]);
 
 		console.log(`Solving function ${this.func} for derivative ${this.reverseMap[changingVar]}`);
-		console.log(`Derivative: ${derivative.text()}`);
-
+		console.log(`Derivative: ${derivative.toString()}`);
 		console.log(values);
-
-		let result = Number(derivative.evaluate(values).text())
-
+		let result = derivative.evaluate(values);
 		console.log(`Result: ${result}`);
 
 		return result;
