@@ -52,8 +52,6 @@ export class Sketch
      */
     addEntity(entity)
     {
-        console.log("Adding Entity: " + entity.name);
-
         this.entities.update(items => {
             items.push(entity);
             return items;
@@ -164,7 +162,7 @@ sketch.addConstraint(new CoincidentPointCircle("Test Circle Coincident 3", point
 // Set up the perpendicular chord
 sketch.addConstraint(new Midpoint("Test Midpoint 1", mid, line));
 
-//sketch.addConstraint(new ColinearPoint("Test Colinear 1", mid, line2));
+sketch.addConstraint(new ColinearPoint("Test Colinear 1", mid, line2));
 sketch.addConstraint(new CoincidentPointCircle("Circle Coincident Chord 1", line2.p1, circle));
 sketch.addConstraint(new CoincidentPointCircle("Circle Coincident Chord 2", line2.p2, circle));
 
@@ -422,7 +420,7 @@ export function* solve()
 
         nerdamer.setVar("D", deltas);
 
-        console.log("Deltas: " + deltas.text())
+        //console.log("Deltas: " + deltas.text())
 
         let converged = true; // While we're looping through the deltas, we might as well check if we've converged
 
@@ -430,6 +428,8 @@ export function* solve()
         {
             let deltaex = nerdamer(`matget(D, ${i}, 0)`);
             let delta = Number(deltaex.text());
+
+            console.log(`Delta ${unknowns[i].resolve().address}: ${delta}`)
 
             unknowns[i].resolve().value += delta;
 

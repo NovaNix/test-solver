@@ -11,8 +11,7 @@
 </script>
 
 <h1>Properties</h1>
-<div>
-
+<div id="prop-tree">
     <div class="tree">
         <TreeNode>
             <svelte:fragment slot="main">Entities</svelte:fragment>
@@ -32,7 +31,6 @@
             </svelte:fragment>
         </TreeNode>
     </div>
-
 </div>
 
 <style>
@@ -44,14 +42,21 @@
 
     }
 
-    div {
+    #prop-tree {
         position: relative;
         height: 80%;
+        /* min-width: max-content; */
+        width: 100%;
+
+        overflow-y: auto;
+        overflow-x: auto;
     }
 
     .tree {
         display: flex;
         flex-direction: column;
+        min-width:100%;
+        width:fit-content;
 
     }
 

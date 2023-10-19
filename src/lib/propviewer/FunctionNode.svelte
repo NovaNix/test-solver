@@ -3,6 +3,7 @@
     import TreeNode from "./tree/TreeNode.svelte";
 
 	import {ConstraintFunction, GenericCFunction} from "../constraints/constraint.js";
+    import Equation from "../utils/Equation.svelte";
 
 	/** @type {ConstraintFunction} */
 	export let func;
@@ -14,7 +15,7 @@
 	{
 		if (func instanceof GenericCFunction)
 		{
-			equation = func.func.toString();
+			equation = func.getLatex();
 		}
 
 		else
@@ -35,7 +36,7 @@
 		{#if !equation}
 			{func.constructor.name}
 		{:else}
-			{equation}
+			<Equation latex={equation}/><span>&nbsp;=&nbsp;{func.solve().toFixed(4)}</span>
 		{/if}
 		
 		{#if func.isMet()}
@@ -43,10 +44,6 @@
 		{/if}
     </svelte:fragment>
     <svelte:fragment slot="children">
-        <!-- <TextLeaf depth={depth + 2}><p>subtype: {constraint.subtype}</p></TextLeaf> -->
-		<!-- <TextLeaf depth={depth + 2}></TextLeaf> -->
-        <!-- <TextLeaf depth={depth + 2}><p>fixed: {entity.fixed}</p></TextLeaf> -->
-        <!-- <TextLeaf depth={depth + 2}><p>construction: {entity.construction}</p></TextLeaf> -->
     </svelte:fragment>
 </TreeNode>
 

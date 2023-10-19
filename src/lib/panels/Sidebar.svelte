@@ -15,7 +15,7 @@
     	grid-area: sidebar;
     	min-width: 30%;
 
-    	/* overflow: auto; */
+    	overflow: auto;
 
     	background-color: var(--sidebar-color);
 		padding: 5px;

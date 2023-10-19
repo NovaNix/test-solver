@@ -40,32 +40,32 @@ export class CoincidentPoints extends Coincident
 	}
 }
 
-export class CoincidentPointLine extends Coincident
-{
-	/** @type {Ref} */
-	p1;
-	/** @type {Ref} */
-	l1;
+// export class CoincidentPointLine extends Coincident
+// {
+// 	/** @type {Ref} */
+// 	p1;
+// 	/** @type {Ref} */
+// 	l1;
 
-	/**
-	 * 
-	 * @param {string} name The name of the constraint
-	 * @param {Point} p1 
-	 * @param {Line} l1
-	 */
-	constructor(name, p1, l1)
-	{
-		super(name, "point-line");
+// 	/**
+// 	 * 
+// 	 * @param {string} name The name of the constraint
+// 	 * @param {Point} p1 
+// 	 * @param {Line} l1
+// 	 */
+// 	constructor(name, p1, l1)
+// 	{
+// 		super(name, "point-line");
 
-		this.p1 = new Ref(p1);
-		this.l1 = new Ref(l1);
+// 		this.p1 = new Ref(p1);
+// 		this.l1 = new Ref(l1);
 
-		this.entities.push(this.p1);
-		this.entities.push(this.l1);
+// 		this.entities.push(this.p1);
+// 		this.entities.push(this.l1);
 
-		this.functions.push();
-	}
-}
+// 		this.functions.push();
+// 	}
+// }
 
 export class CoincidentPointCircle extends Coincident
 {

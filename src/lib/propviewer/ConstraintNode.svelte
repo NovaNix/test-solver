@@ -34,7 +34,7 @@
 			</svelte:fragment>
 			<svelte:fragment slot="children">
 				{#each constraint.functions as func}
-					<FunctionNode depth={depth + 3} func={func}/>
+					<FunctionNode depth={depth + 2} func={func}/>
 				{/each}
 			</svelte:fragment>
 		</TreeNode>

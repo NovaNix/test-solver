@@ -164,12 +164,24 @@ export class GenericCFunction extends ConstraintFunction
 	solveDerivative(changingVar)
 	{
 		let values = this.#getVarValues();
-		return Number(nerdamer.diff(nerdamer(this.func), this.reverseMap[changingVar]).evaluate(values).text());
+
+		let derivative = nerdamer.diff(nerdamer(this.func), this.reverseMap[changingVar]);
+
+		console.log(`Solving function ${this.func} for derivative ${this.reverseMap[changingVar]}`);
+		console.log(`Derivative: ${derivative.text()}`);
+
+		console.log(values);
+
+		let result = Number(derivative.evaluate(values).text())
+
+		console.log(`Result: ${result}`);
+
+		return result;
 	}
 
 	solveFor(variable)
 	{
-		console.log(`Solving function "${this.func}" for variable "${this.reverseMap[variable]}"`);
+		//console.log(`Solving function "${this.func}" for variable "${this.reverseMap[variable]}"`);
 
 		/** @type {import("nerdamer").Expression[]} */
 		let rearranged = nerdamer(this.func).solveFor(this.reverseMap[variable]);
@@ -220,6 +232,11 @@ export class GenericCFunction extends ConstraintFunction
 	getData()
 	{
 		return this.data;
+	}
+
+	getLatex()
+	{
+		return nerdamer.convertToLaTeX(this.func);
 	}
 }
 

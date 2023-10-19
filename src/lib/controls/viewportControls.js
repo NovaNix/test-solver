@@ -18,9 +18,9 @@ export function onMouseWheel(event)
 
 	Viewport.zoom(zoom);
 
-	console.log("Zooming by " + zoom);
+	//console.log("Zooming by " + zoom);
 
-	console.log("Mouse Wheel");
+	//console.log("Mouse Wheel");
 }
 
 let createdPoints = 0;

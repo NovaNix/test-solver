@@ -55,6 +55,8 @@
 
 	.tree-cell {
 		font-family: inherit;
+		text-overflow: ellipsis;
+		white-space: nowrap;
 	}
 
 	.tree-cell.selected {
