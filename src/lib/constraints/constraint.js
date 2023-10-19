@@ -90,6 +90,7 @@ export class ConstraintFunction
 	 * The derivative of the constraint function.
 	 * The values for the equation should be pulled from the parent constraint.
 	 * @param {string} changingVar The name of the variable that is changing (if changingVar is x, then the function is df/dx)
+	 * @returns {number}
 	 */ 
 	solveDerivative(changingVar)
 	{

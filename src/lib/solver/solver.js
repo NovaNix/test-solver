@@ -9,7 +9,7 @@ import { CoincidentPoints, CoincidentPointCircle } from "../constraints/coincide
 import { FloatData, Ref } from "../entities/entity.js";
 import nerdamer from "nerdamer/all.min";
 import * as matmath from "../utils/matmath.js";
-import { ColinearPoint, Midpoint } from "../constraints/lines.js";
+import { ColinearPoint, Midpoint, Perpendicular } from "../constraints/lines.js";
 
 export const SELECT_MODE_NEW = 0;
 export const SELECT_MODE_ADD = 1;
@@ -144,7 +144,7 @@ pointC.fixed = true;
 let line = sketch.addEntity(new Line("Line 0", -2, -1, -1, 1));
 line.construction = true;
 
-let line2 = sketch.addEntity(new Line("Line 1", 0, 0, 1, 1));
+let line2 = sketch.addEntity(new Line("Line 1", -1, 0, 1, 2));
 line2.construction = true;
 
 let mid = sketch.addEntity(new Point("Mid", 2, -3));
@@ -164,10 +164,11 @@ sketch.addConstraint(new CoincidentPointCircle("Test Circle Coincident 3", point
 // Set up the perpendicular chord
 sketch.addConstraint(new Midpoint("Test Midpoint 1", mid, line));
 
-sketch.addConstraint(new ColinearPoint("Test Colinear 1", mid, line2));
+//sketch.addConstraint(new ColinearPoint("Test Colinear 1", mid, line2));
 sketch.addConstraint(new CoincidentPointCircle("Circle Coincident Chord 1", line2.p1, circle));
 sketch.addConstraint(new CoincidentPointCircle("Circle Coincident Chord 2", line2.p2, circle));
 
+sketch.addConstraint(new Perpendicular("Test Perpendicular 1", line, line2));
 // sketch.addConstraint()
 
 export function select(entityname)
@@ -248,6 +249,7 @@ export function* solve()
     constraints.forEach(constraint => functions.push(...constraint.functions));
 
     let simpleSolved = false;
+    //let simpleSolved = true;
 
     console.log("Started simple solve");
 
@@ -336,28 +338,42 @@ export function* solve()
     console.log(`Remaining Functions (${functions.length}): ${functions}`);
     console.log(`Remaining Unknowns (${unknowns.length}): ${unknowns}`);
 
+    // Netwon's method works by procedurally adding delta values to the unknowns until the deltas for all elements are zero
+    // These delta values are 
+
     let solving = true;
     let iterations = 0;
 
     while (solving)
     {
+        /** @type {number[][]} */
         let mat = [];
 
         // Calculate the Jacobian matrix
+        // Height: number of functions
+        // Width: number of unknowns
 
         for (let func of functions)
         {
+            /** @type {number[]} */
             let row = [];
 
             for (let unknown of unknowns)
             {
-                row.push(func.solveDerivative(unknown.address));
+                let d = func.solveDerivative(unknown.address);
+                row.push(d);
+
+                if (d == 0)
+                {
+                    console.error("Derivative is zero! This is bad!");
+                }
             }
 
             mat.push(row);
         }
 
         // Calculate the function matrix (array of rows)
+        /** @type {number[]} */
         let fmat = [];
 
         for (let func of functions)
@@ -365,17 +381,44 @@ export function* solve()
             fmat.push(-func.solve());
         }
 
+        // // Pad the matrix if the number of functions is less than the number of variables
+        // let padCount = unknowns.length - functions.length;
+
+        // for (let i = 0; i < padCount; i++)
+        // {
+        //     console.log("Adding padding row...");
+        //     mat.push(new Array(unknowns.length).fill(0));
+        //     mat[i + functions.length][i + functions.length] = 1; // Set the diagonal to 1
+
+        //     fmat.push(0);
+        // }
+
         // Move the matrices into nerdamer
 
         let J = matmath.toNerdamerMatrix(mat);
-        let F = matmath.toNerdamerMatrix(fmat); // This needs to be transposed because all of the elements need to be a single column
+        let F = matmath.toNerdamerMatrix(fmat);
 
         console.log("Jacobian Matrix: " + J.text());
         console.log("Function Matrix: " + F.text());
 
+        let JInvert;
+        if (functions.length != unknowns.length)
+        {
+            console.log("Using pseudo inverse");
+            let part = nerdamer("transpose(J)", {J: J.toString()});
+            console.log(part.text());
+            JInvert = nerdamer("invert(transpose(J) * J) * transpose(J)", {J: J.toString()});
+        }
+
+        else
+        {
+            console.log("Using regular inverse");
+            JInvert = nerdamer("invert(J)", {J: J.toString()});
+        }
+
         // Calculate and apply the deltas
         /** @type {import("nerdamer").Expression} */
-        let deltas = nerdamer("invert(J)*F", {J: J.toString(), F: F.toString()});
+        let deltas = nerdamer("J*F", {J: JInvert.toString(), F: F.toString()});
 
         nerdamer.setVar("D", deltas);
 

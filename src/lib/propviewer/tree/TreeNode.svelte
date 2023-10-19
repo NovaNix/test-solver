@@ -54,7 +54,7 @@
 	}
 
 	.tree-cell {
-		
+		font-family: inherit;
 	}
 
 	.tree-cell.selected {
