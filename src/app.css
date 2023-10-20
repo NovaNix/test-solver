@@ -115,7 +115,8 @@ svg * {
 
 .tree-cell {
 
-    height: 22px;
+    min-height: 22px;
+    height: fit-content;
     font-size: 11pt;
     color: #C3C3C3;
 

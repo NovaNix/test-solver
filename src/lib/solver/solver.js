@@ -8,8 +8,12 @@ import {Constraint, ConstraintFunction} from "../constraints/constraint.js"
 import { CoincidentPoints, CoincidentPointCircle } from "../constraints/coincident.js";
 import { FloatData, Ref } from "../entities/entity.js";
 import nerdamer from "nerdamer/all.min";
-import * as matmath from "../utils/matmath.js";
 import { ColinearPoint, Midpoint, Perpendicular } from "../constraints/lines.js";
+
+import { create, all } from 'mathjs'
+
+const config = { }
+const math = create(all, config)
 
 export const SELECT_MODE_NEW = 0;
 export const SELECT_MODE_ADD = 1;
@@ -360,11 +364,6 @@ export function* solve()
             {
                 let d = func.solveDerivative(unknown.address);
                 row.push(d);
-
-                if (d == 0)
-                {
-                    console.error("Derivative is zero! This is bad!");
-                }
             }
 
             mat.push(row);
@@ -379,61 +378,31 @@ export function* solve()
             fmat.push(-func.solve());
         }
 
-        // // Pad the matrix if the number of functions is less than the number of variables
-        // let padCount = unknowns.length - functions.length;
-
-        // for (let i = 0; i < padCount; i++)
-        // {
-        //     console.log("Adding padding row...");
-        //     mat.push(new Array(unknowns.length).fill(0));
-        //     mat[i + functions.length][i + functions.length] = 1; // Set the diagonal to 1
-
-        //     fmat.push(0);
-        // }
-
         // Move the matrices into nerdamer
 
-        let J = matmath.toNerdamerMatrix(mat);
-        let F = matmath.toNerdamerMatrix(fmat);
+        let J = math.matrix(mat);
+        let F = math.matrix(fmat);
 
-        console.log("Jacobian Matrix: " + J.text());
-        console.log("Function Matrix: " + F.text());
+        console.log("Jacobian Matrix: " + J.toString());
+        console.log("Function Matrix: " + F.toString());
 
-        let JInvert;
-        if (functions.length != unknowns.length)
-        {
-            console.log("Using pseudo inverse");
-            let part = nerdamer("transpose(J)", {J: J.toString()});
-            console.log(part.text());
-            JInvert = nerdamer("invert(transpose(J) * J) * transpose(J)", {J: J.toString()});
-        }
-
-        else
-        {
-            console.log("Using regular inverse");
-            JInvert = nerdamer("invert(J)", {J: J.toString()});
-        }
+        let JInvert = math.pinv(J);
 
         // Calculate and apply the deltas
-        /** @type {import("nerdamer").Expression} */
-        let deltas = nerdamer("J*F", {J: JInvert.toString(), F: F.toString()});
-
-        nerdamer.setVar("D", deltas);
-
-        //console.log("Deltas: " + deltas.text())
+        let deltas = math.multiply(JInvert, F);
+        console.log(`Deltas: ${deltas.toString()}`);
 
         let converged = true; // While we're looping through the deltas, we might as well check if we've converged
 
         for (let i = 0; i < unknowns.length; i++)
         {
-            let deltaex = nerdamer(`matget(D, ${i}, 0)`);
-            let delta = Number(deltaex.text());
+            let deltaex = deltas.get([i]);
 
-            console.log(`Delta ${unknowns[i].resolve().address}: ${delta}`)
+            console.log(`Delta ${unknowns[i].resolve().address}: ${deltaex}`)
 
-            unknowns[i].resolve().value += delta;
+            unknowns[i].resolve().value += deltaex;
 
-            if (Math.abs(delta) > Number.EPSILON)
+            if (Math.abs(deltaex) > Number.EPSILON)
                 converged = false;
         }
 

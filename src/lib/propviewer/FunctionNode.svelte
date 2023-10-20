@@ -4,18 +4,27 @@
 
 	import {ConstraintFunction, GenericCFunction} from "../constraints/constraint.js";
     import Equation from "../utils/Equation.svelte";
+    import TreeLeaf from "./tree/TreeLeaf.svelte";
 
 	/** @type {ConstraintFunction} */
 	export let func;
 	export let depth = 0;
 
 	let equation = null;
+	let derivativeFunctions = [];
 
 	function updateEquation()
 	{
 		if (func instanceof GenericCFunction)
 		{
 			equation = func.getLatex();
+
+			derivativeFunctions = [];
+
+			for (const [key, value] of Object.entries(func.derivatives))
+			{
+				derivativeFunctions.push(`\\frac{\\partial f}{\\partial ${key}} = ${value.toTex()}`)
+			}
 		}
 
 		else
@@ -36,7 +45,8 @@
 		{#if !equation}
 			{func.constructor.name}
 		{:else}
-			<Equation latex={equation}/><span>&nbsp;=&nbsp;{func.solve().toFixed(4)}</span>
+		<Equation latex={equation}/><span>&nbsp;=&nbsp;{func.solve().toFixed(4)}</span>
+			
 		{/if}
 		
 		{#if func.isMet()}
@@ -44,6 +54,9 @@
 		{/if}
     </svelte:fragment>
     <svelte:fragment slot="children">
+		{#each derivativeFunctions as derivative}
+			<TreeLeaf depth={depth+2}><Equation latex={derivative}/></TreeLeaf>
+		{/each}
     </svelte:fragment>
 </TreeNode>
 

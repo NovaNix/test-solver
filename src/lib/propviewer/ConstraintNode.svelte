@@ -46,6 +46,19 @@
 		font-weight: bold;
 	}
 
+	p {
+        /* display: inline-block; */
+        line-height: 22px;
+        height: 22px;
+        vertical-align: middle;
+
+        font-size: 11pt;
+        color: #C3C3C3;
+        margin: 0;
+
+        /* font-family: ui-monospace; */
+    }
+
 	.solved-icon {
         color: lime;
         margin-left: auto;

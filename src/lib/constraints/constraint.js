@@ -131,6 +131,8 @@ export class GenericCFunction extends ConstraintFunction
 	/** @type {string} */
 	func;
 
+	derivatives;
+
 	map;
 	reverseMap;
 
@@ -144,9 +146,14 @@ export class GenericCFunction extends ConstraintFunction
 		super(parent);
 		this.map = map;
 
-		//this.expression = nerdamer(func);
-
 		this.func = func;
+
+		// Precalculate the derivative functions
+		this.derivatives = {};
+		for (const [key, value] of Object.entries(map))
+		{
+			this.derivatives[key] = math.simplify(math.derivative(this.func, key));
+		}
 
 		this.data = [];
 		this.reverseMap = {};
@@ -172,27 +179,13 @@ export class GenericCFunction extends ConstraintFunction
 
 		let values = this.#getVarValues();
 
-		// let derivative = nerdamer.diff(nerdamer(this.func), this.reverseMap[changingVar]);
+		let derivative = this.derivatives[this.reverseMap[changingVar]];
 
-		// console.log(`Solving function ${this.func} for derivative ${this.reverseMap[changingVar]}`);
-		// console.log(`Derivative: ${derivative.text()}`);
-
-		// console.log(values);
-
-		// let result = Number(derivative.evaluate(values).text())
-
-		// console.log(`Result: ${result}`);
-
-		// return result;
-
-		let f = math.parse(this.func);
-		let derivative = math.derivative(f, this.reverseMap[changingVar]);
-
-		console.log(`Solving function ${this.func} for derivative ${this.reverseMap[changingVar]}`);
-		console.log(`Derivative: ${derivative.toString()}`);
-		console.log(values);
+		//console.log(`Solving function ${this.func} for derivative ${this.reverseMap[changingVar]}`);
+		//console.log(`Derivative: ${derivative.toString()}`);
+		//console.log(values);
 		let result = derivative.evaluate(values);
-		console.log(`Result: ${result}`);
+		//console.log(`Result: ${result}`);
 
 		return result;
 	}

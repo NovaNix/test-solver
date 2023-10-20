@@ -24,4 +24,8 @@
 
 <div bind:this={container}></div>
 
-
+<style>
+    div {
+        padding: 3px;
+    }
+</style>
