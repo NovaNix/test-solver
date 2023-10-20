@@ -191,7 +191,8 @@ export class ColinearPointFunction extends GenericCFunction
         let p = new Ref(point).resolve();
         let l = new Ref(line).resolve();
 
-        super(parent, "abs((c-a)(b-y)-(a-x)(d-b))/sqrt((a-c)^2+(b-d)^2)", {
+        //super(parent, "abs((c-a)(b-y)-(a-x)(d-b))/sqrt((a-c)^2+(b-d)^2)", {
+        super(parent, "((c-a)(b-y)-(a-x)(d-b))/sqrt((a-c)^2+(b-d)^2)", {
 			a: new Ref(l.p1.data.x),
 			b: new Ref(l.p1.data.y),
             c: new Ref(l.p2.data.x),
