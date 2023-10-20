@@ -111,3 +111,11 @@ l1.root colinear with l2 && l2.root colinear with l1
 ## Midpoint (lineseg l1, point p1)
 
 p1 = (l1.p1 + l1.p2) / 2
+
+
+## Inequality Constraint
+maybe look at https://www.stat.cmu.edu/~ryantibs/convexopt-F15/scribes/15-barr-method-scribed.pdf
+
+a <= b
+becomes a function that returns b-a if a > b, and 0 if a <= b
+the derivative works the same way. 0 if a <= b, f'(a,b)=b-a otherwise
