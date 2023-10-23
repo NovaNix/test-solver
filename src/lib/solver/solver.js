@@ -7,13 +7,8 @@ import { get } from 'svelte/store'
 import {Constraint, ConstraintFunction} from "../constraints/constraint.js"
 import { CoincidentPoints, CoincidentPointCircle } from "../constraints/coincident.js";
 import { FloatData, Ref } from "../entities/entity.js";
-import nerdamer from "nerdamer/all.min";
 import { ColinearPoint, Midpoint, Perpendicular } from "../constraints/lines.js";
-
-import { create, all } from 'mathjs'
-
-const config = { }
-const math = create(all, config)
+import { newtonSolver } from "./newtonSolver.js";
 
 export const SELECT_MODE_NEW = 0;
 export const SELECT_MODE_ADD = 1;
@@ -172,6 +167,11 @@ sketch.addConstraint(new CoincidentPointCircle("Circle Coincident Chord 2", line
 
 sketch.addConstraint(new Perpendicular("Test Perpendicular 1", line, line2));
 // sketch.addConstraint()
+
+export function updateDisplay()
+{
+    sketch.updateDisplay();
+}
 
 export function select(entityname)
 {
@@ -340,82 +340,14 @@ export function* solve()
     console.log(`Remaining Functions (${functions.length}): ${functions}`);
     console.log(`Remaining Unknowns (${unknowns.length}): ${unknowns}`);
 
-    // Netwon's method works by procedurally adding delta values to the unknowns until the deltas for all elements are zero
-    // These delta values are 
+    let newton = newtonSolver(functions, unknowns);
 
     let solving = true;
     let iterations = 0;
 
     while (solving)
     {
-        /** @type {number[][]} */
-        let mat = [];
-
-        // Calculate the Jacobian matrix
-        // Height: number of functions
-        // Width: number of unknowns
-
-        for (let func of functions)
-        {
-            /** @type {number[]} */
-            let row = [];
-
-            for (let unknown of unknowns)
-            {
-                let d = func.solveDerivative(unknown.address);
-                row.push(d);
-            }
-
-            mat.push(row);
-        }
-
-        // Calculate the function matrix (array of rows)
-        /** @type {number[]} */
-        let fmat = [];
-
-        for (let func of functions)
-        {
-            fmat.push(-func.solve());
-        }
-
-        // Move the matrices into nerdamer
-
-        let J = math.matrix(mat);
-        let F = math.matrix(fmat);
-
-        console.log("Jacobian Matrix: " + J.toString());
-        console.log("Function Matrix: " + F.toString());
-
-        let JInvert = math.pinv(J);
-
-        // Calculate and apply the deltas
-        let deltas = math.multiply(JInvert, F);
-        console.log(`Deltas: ${deltas.toString()}`);
-
-        let converged = true; // While we're looping through the deltas, we might as well check if we've converged
-
-        for (let i = 0; i < unknowns.length; i++)
-        {
-            let deltaex = deltas.get([i]);
-
-            console.log(`Delta ${unknowns[i].resolve().address}: ${deltaex}`)
-
-            unknowns[i].resolve().value += deltaex;
-
-            if (Math.abs(deltaex) > Number.EPSILON)
-                converged = false;
-        }
-
-        // Check to see if converged
-        if (converged)
-        {
-            console.log("Converged!");
-
-            // Mark all of the unknowns as solved
-            unknowns.forEach(x => x.resolve().solved = true);
-
-            solving = false;
-        }
+        newton.next();
 
         // Prepare for next loop
 
@@ -431,5 +363,3 @@ export function* solve()
     }
 
 }
-
-// console.log(matmath.matToString([[1, 2], [3, 4]]));
