@@ -126,20 +126,21 @@ export class GenericCFunction extends ConstraintFunction
 	/** @type {Ref[]} */
 	data;
 
-	// /** @type {import("nerdamer").Expression} */
-	// expression;
 	/** @type {string} */
 	func;
 
+	/** @type {Object.<string, import("mathjs").MathNode>} */
 	derivatives;
 
+	/** @type {Object.<string, number|Ref>} */
 	map;
+	/** @type {Object.<string, string>} */
 	reverseMap;
 
 	/**
 	 * @param {Constraint} parent 
 	 * @param {string} func 
-	 * @param {*} map An object connecting the variables in the function to the references of the data. 
+	 * @param {Object.<string, number|Ref>} map An object connecting the variables in the function to the references of the data. 
 	 */
 	constructor(parent, func, map)
 	{
@@ -159,8 +160,11 @@ export class GenericCFunction extends ConstraintFunction
 		this.reverseMap = {};
 		for (const [key, value] of Object.entries(map))
 		{
-			this.data.push(value);
-			this.reverseMap[value.address] = key;
+			if (value instanceof Ref)
+			{
+				this.data.push(value);
+				this.reverseMap[value.address] = key;
+			}
 		}
 	}
 
@@ -168,8 +172,10 @@ export class GenericCFunction extends ConstraintFunction
 	{
 		let values = this.#getVarValues();
 
+		return math.parse(this.func).evaluate(values);
+
 		// Solve the expression
-		return Number(nerdamer(this.func, values).evaluate().text());
+		//return Number(nerdamer(this.func, values).evaluate().text());
 	}
 
 	solveDerivative(changingVar)
@@ -181,11 +187,7 @@ export class GenericCFunction extends ConstraintFunction
 
 		let derivative = this.derivatives[this.reverseMap[changingVar]];
 
-		//console.log(`Solving function ${this.func} for derivative ${this.reverseMap[changingVar]}`);
-		//console.log(`Derivative: ${derivative.toString()}`);
-		//console.log(values);
 		let result = derivative.evaluate(values);
-		//console.log(`Result: ${result}`);
 
 		return result;
 	}
@@ -262,59 +264,3 @@ export class DataEqualFunction extends GenericCFunction
 
 	}
 }
-
-// export class DataEqualFunction extends ConstraintFunction
-// {
-// 	/** @type {Ref} */
-// 	data1;
-// 	/** @type {Ref} */
-// 	data2;
-
-// 	constructor(parent, data1, data2)
-// 	{
-// 		super(parent);
-
-// 		this.data1 = new Ref(data1);
-// 		this.data2 = new Ref(data2);
-// 	}
-
-// 	solve()
-// 	{
-// 		return this.data1.value - this.data2.value;
-// 	}
-
-// 	solveDerivative(changingVar)
-// 	{
-// 		switch (changingVar)
-// 		{
-// 			case this.data1.address:
-// 				return 1;
-// 			case this.data2.address:
-// 				return -1;
-// 			default:
-// 				return 0;
-// 		}
-
-// 	}
-
-// 	solveFor(variable)
-// 	{
-// 		if (variable == this.data1.address)
-// 		{
-// 			return this.data2.value;
-// 		}
-// 		else if (variable == this.data2.address)
-// 		{
-// 			return this.data1.value;
-// 		}
-// 		else
-// 		{
-// 			return null;
-// 		}
-// 	}
-
-// 	getData()
-// 	{
-// 		return [this.data1, this.data2];
-// 	}
-// }
