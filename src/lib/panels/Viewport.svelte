@@ -17,6 +17,8 @@
 		zoom: 0, // Zoom is NOT scale. It is a power of 2
 	});
 
+	export const pointSize = writable(0);
+
 	// Camera Functions
 	export function resetCamera()
 	{
@@ -187,6 +189,8 @@
 		svg.setAttribute("viewBox", `${topLeft[0]} ${topLeft[1]} ${bottomRight[0] - topLeft[0]} ${bottomRight[1] - topLeft[1]}`);
 	
 		renderSpace.style.setProperty("--inverse-zoom", 1.0 / Math.pow(2, camera.zoom));
+
+		$pointSize = 6 * (1.0 / (Math.pow(2, camera.zoom) * ppu))
 	}
 
 	$: updateCamera($camera);

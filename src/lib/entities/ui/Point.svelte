@@ -1,7 +1,8 @@
 <script>
 
 import {Point} from "../point.js";
-import * as solver from "../../solver/solver.js";
+import * as Viewport from "../../panels/Viewport.svelte";
+import * as toolController from "../../controls/toolController.js";
 
 /** @type {Point} */
 export let entity;
@@ -9,9 +10,11 @@ export let entity;
 let selected = entity.selected;
 let hover = entity.hover;
 
+let pointSize = Viewport.pointSize;
+
 function onClick(event)
 {
-    solver.select(entity.address);
+    toolController.select(entity.address);
 
     event.stopPropagation();
 }
@@ -43,9 +46,9 @@ function onMouseLeave(event)
 <!-- svelte-ignore a11y-click-events-have-key-events -->
 <circle
     class="collision"
-    x={entity.x}
-    y={entity.y}
-    r={1}
+    cx={entity.x}
+    cy={entity.y}
+    r={$pointSize}
 
     style={`--point-size: var(--regular-point-size);`}
 
@@ -84,10 +87,15 @@ function onMouseLeave(event)
         fill: var(--collision-overlay-color);
         fill-opacity: var(--collision-overlay-opacity);
 
-        transform: 
-	        scale(var(--inverse-zoom)) /* Camera to World */
-	        scale(var(--inverse-ppu)) /* World to Screen */
-            scale(var(--point-size)) /* Convert point size to view space, scale it by that value */
+        /* r: 1; */
+        /* r: calc(var(--inverse-zoom) * var(--inverse-ppu) * var(--point-size)); */
+
+        /* transform:  */
+	        /* scale(var(--inverse-zoom)) Camera to World */
+	        /* scale(var(--inverse-ppu)) World to Screen */
+            /* scale(var(--point-size)) Convert point size to view space, scale it by that value */
 	        ;
+
+        stroke: none;
     }
 </style>
