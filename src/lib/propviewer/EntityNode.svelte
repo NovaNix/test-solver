@@ -4,7 +4,7 @@
     import TreeNode from "./tree/TreeNode.svelte";
     import TreeToggle from "./tree/TreeToggle.svelte";
 
-    import * as solver from "../solver/solver.js";
+    import * as toolController from "../controls/toolController.js";
 
     /** @type {Entity}*/
     export let entity;
@@ -23,7 +23,7 @@
 
     function onClick(event)
     {
-        solver.select(entity.address);
+        toolController.select(entity.address);
 
         event.stopPropagation();
     }

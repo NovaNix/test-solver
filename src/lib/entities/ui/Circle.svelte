@@ -2,6 +2,7 @@
     import {Circle} from "../circle.js";
     import * as solver from "../../solver/solver.js";
     import Point from "./Point.svelte";
+    import * as toolController from "../../controls/toolController.js";
 
     /** @type {Circle} */
     export let entity;
@@ -11,7 +12,7 @@
 
     function onClick(event)
     {
-        solver.select(entity.address);
+        toolController.select(entity.address);
 
         event.stopPropagation();
     }

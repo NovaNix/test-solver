@@ -1,6 +1,6 @@
 <script>
     import {Line} from "../line.js";
-    import * as solver from "../../solver/solver.js";
+    import * as toolController from "../../controls/toolController.js";
     import Point from "./Point.svelte";
 
     /** @type {Line} */
@@ -11,7 +11,7 @@
 
     function onClick(event)
     {
-        solver.select(entity.address);
+        toolController.select(entity.address);
 
         event.stopPropagation();
     }
