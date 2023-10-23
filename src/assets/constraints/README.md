@@ -1,0 +1,1 @@
+These icons were pulled from the CAD Sketcher blender plugin. These should be replaced later. 
