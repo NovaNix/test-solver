@@ -2,6 +2,7 @@
     import {Entity} from "../entities/entity.js"
     import TextLeaf from "./tree/TreeLeaf.svelte";
     import TreeNode from "./tree/TreeNode.svelte";
+    import TreeToggle from "./tree/TreeToggle.svelte";
 
     import * as solver from "../solver/solver.js";
 
@@ -62,8 +63,8 @@ on:mouseleave={onMouseLeave}
             
         {/each}
 
-        <TextLeaf depth={depth + 2}><p>fixed: {entity.fixed}</p></TextLeaf>
-        <TextLeaf depth={depth + 2}><p>construction: {entity.construction}</p></TextLeaf>
+        <TreeToggle name={entity.address + ":fixed"} value={entity.fixed} depth={depth + 2}>fixed:</TreeToggle>
+        <TreeToggle name={entity.address + ":construction"} value={entity.construction} depth={depth + 2}>construction:</TreeToggle>
     </svelte:fragment>
 </TreeNode>
 
