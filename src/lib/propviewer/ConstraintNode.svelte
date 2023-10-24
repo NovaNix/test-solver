@@ -1,4 +1,13 @@
 <script>
+	import COINCIDENT_ICON from "../../assets/constraints/COINCIDENT.png";
+	import EQUAL_ICON from "../../assets/constraints/EQUAL.png";
+	import HORIZONTAL_ICON from "../../assets/constraints/HORIZONTAL.png";
+	import VERTICAL_ICON from "../../assets/constraints/VERTICAL.png";
+	import PARALLEL_ICON from "../../assets/constraints/PARALLEL.png";
+	import PERPENDICULAR_ICON from "../../assets/constraints/PERPENDICULAR.png";
+	import TANGENT_ICON from "../../assets/constraints/TANGENT.png";
+	import MIDPOINT_ICON from "../../assets/constraints/MIDPOINT.png";
+
 	import TextLeaf from "./tree/TreeLeaf.svelte";
     import TreeNode from "./tree/TreeNode.svelte";
 
@@ -6,19 +15,29 @@
 
 	import {Constraint} from "../constraints/constraint.js";
 
+	
+
 	/** @type {Constraint} */
 	export let constraint;
 	export let depth = 0;
 
 	const icons = {
-		// "coincident": ""
+		"coincident": COINCIDENT_ICON,
+		"equal": EQUAL_ICON,
+		"horizontal": HORIZONTAL_ICON,
+		"vertical": VERTICAL_ICON,
+		"parallel": PARALLEL_ICON,
+		"perpendicular": PERPENDICULAR_ICON,
+		"tangent": TANGENT_ICON,
+		"midpoint": MIDPOINT_ICON
 	}
 </script>
 
 <TreeNode depth={depth + 1}>
     <svelte:fragment slot="main">
         {#if icons[constraint.type]}
-			<span class="icon entity-icon material-symbols-outlined">{icons[constraint.type]}</span>
+			<!-- <span class="icon entity-icon material-symbols-outlined">{icons[constraint.type]}</span> -->
+			<img src={icons[constraint.type]} alt={constraint.type} class="constraint-icon"/>
 		{/if}
 		<p class="constraint-name">{constraint.name}</p>
 		{#if constraint.isMet()}
@@ -58,6 +77,13 @@
 
         /* font-family: ui-monospace; */
     }
+
+	.constraint-icon {
+		width: 20px;
+		height: 20px;
+		vertical-align: middle;
+		margin-right: 5px;
+	}
 
 	.solved-icon {
         color: lime;
