@@ -23,7 +23,6 @@ export class FloatData
     value;
 
     #solved = false;
-    #fixed = false;
 
     /** @type {number[]} */
     potentialValues;
@@ -48,17 +47,12 @@ export class FloatData
 
     get fixed()
     {
-        return this.#fixed;
-    }
-
-    set fixed(value)
-    {
-        this.#fixed = value;
+        return this.parent.fixed.value;
     }
 
     get solved()
     {
-        if (this.#fixed)
+        if (this.fixed)
             return true;
 
         return this.#solved;
