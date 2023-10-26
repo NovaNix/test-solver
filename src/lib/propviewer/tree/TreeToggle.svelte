@@ -13,7 +13,22 @@
     /** @type {boolean} */
     let locked;
 
-    $: locked = obj instanceof LockableVStore ? obj.locked : false;
+    function updateLocked(objBool)
+    {
+        // We only take in objBool so svelte will run this when it updates obj
+
+        if (obj instanceof LockableVStore)
+        {
+            locked = obj.locked;
+        }
+        
+        else
+        {
+            locked = false;
+        }
+    }
+
+    $: updateLocked($obj);
     
 </script>
 
@@ -24,7 +39,7 @@
             <input type="checkbox" 
                 name={name} 
                 bind:checked={$obj} 
-                disabled={locked}
+                disabled={locked ? true : null}
             />
         </div>
         
