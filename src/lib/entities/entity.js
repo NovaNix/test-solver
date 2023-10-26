@@ -1,5 +1,6 @@
 import { writable } from 'svelte/store';
 import {sketch} from "../solver/solver.js";
+import {VStore, LockableVStore} from "../utils/vstore"
 
 /**
  * @typedef Addressable
@@ -30,6 +31,7 @@ export class FloatData
     /**
      * 
      * @param {Entity} parent The entity this data belongs to
+     * @param {string} name The name of the data
      * @param {number} value 
      */
     constructor(parent, name, value)
@@ -52,21 +54,19 @@ export class FloatData
     set fixed(value)
     {
         this.#fixed = value;
-
-        this.#solved = this.#fixed;
     }
 
     get solved()
     {
+        if (this.#fixed)
+            return true;
+
         return this.#solved;
     }
 
     set solved(value)
     {
-        if (!this.#fixed)
-        {
-            this.#solved = value;
-        }
+        this.#solved = value;
     }
 
     clearSolveInfo()
@@ -83,19 +83,22 @@ export class Entity
 {
     // The parent entity of this entity. If this is a top-level entity, this will be null
     /** @type {Entity | null} */
-    parent;
+    #parent;
 
     name;
     type;
 
-    #construction = false;
-    #fixed = false;
+    construction = new LockableVStore(false, null, true);
+    fixed = new LockableVStore(false, null, true);
 
     // These two are for the UI
-    selected = writable(false);
-    hover = writable(false);
+    selected = new VStore(false);
+    hover = new VStore(false);
 
-    // An object containing all of the relevant data for this entity. This includes both FloatData and other Entities
+    /**
+     * An object containing all of the relevant data for this entity. This includes both FloatData and other Entities
+     * @type {Object.<string, FloatData|Entity>}
+     */
     data;
 
     /**
@@ -110,6 +113,28 @@ export class Entity
         this.data = {};
     }
 
+    get parent()
+    {
+        return this.#parent;
+    }
+
+    set parent(value)
+    {
+        this.#parent = value;
+
+        if (this.#parent == null)
+        {
+            this.construction.setLockSource(null);
+            this.fixed.setLockSource(null);
+        }
+
+        else
+        {
+            this.construction.setLockSource(this.#parent.construction);
+            this.fixed.setLockSource(this.#parent.fixed);
+        }
+    }
+
     get address()
     {
         if (this.parent)
@@ -122,42 +147,9 @@ export class Entity
         }
     }
 
-    get construction()
-    {
-        return this.#construction;
-    }
-
-    set construction(value)
-    {
-        this.#construction = value;
-
-        for (let valueName in this.data)
-        {
-            this.data[valueName].construction = value;
-        }
-    }
-
-    get fixed()
-    {
-        return this.#fixed;
-    }
-
-    set fixed(value)
-    {
-        this.#fixed = value;
-
-        for (let valueName in this.data)
-        {
-            this.data[valueName].fixed = value;
-        }
-    }
-
     set solved(value)
     {
-        for (let valueName in this.data)
-        {
-            this.data[valueName].solved = value;
-        }
+        Object.values(this.data).forEach(x => x.solved = value);
     }
 
     get solved()

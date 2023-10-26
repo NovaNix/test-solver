@@ -35,6 +35,11 @@ export class CoincidentPoints extends Coincident
 		this.entities.push(this.p1);
 		this.entities.push(this.p2);
 
+		this.values = {
+			p1: this.p1,
+			p2: this.p2
+		}
+
 		this.functions.push(new DataEqualFunction(this, p1.data["x"].address, p2.data["x"].address));
 		this.functions.push(new DataEqualFunction(this, p1.data["y"].address, p2.data["y"].address));
 	}
@@ -62,6 +67,11 @@ export class CoincidentPointCircle extends Coincident
 
 		this.entities.push(this.p1);
 		this.entities.push(this.circle);
+
+		this.values = {
+			p1: this.p1,
+			circle: this.circle
+		}
 
 		this.functions.push(new GenericCFunction(this, "r^2-((x-h)^2 + (y-k)^2)", {
 			x: new Ref(p1.data["x"]),

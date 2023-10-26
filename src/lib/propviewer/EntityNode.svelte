@@ -63,8 +63,8 @@ on:mouseleave={onMouseLeave}
             
         {/each}
 
-        <TreeToggle name={entity.address + ":fixed"} value={entity.fixed} depth={depth + 2}>fixed:</TreeToggle>
-        <TreeToggle name={entity.address + ":construction"} value={entity.construction} depth={depth + 2}>construction:</TreeToggle>
+        <TreeToggle name={entity.address + ":fixed"} obj={entity.fixed} depth={depth + 2}>fixed:</TreeToggle>
+        <TreeToggle name={entity.address + ":construction"} obj={entity.construction} depth={depth + 2}>construction:</TreeToggle>
     </svelte:fragment>
 </TreeNode>
 

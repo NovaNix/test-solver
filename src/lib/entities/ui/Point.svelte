@@ -9,6 +9,7 @@ export let entity;
 
 let selected = entity.selected;
 let hover = entity.hover;
+let construction = entity.construction;
 
 let pointSize = Viewport.pointSize;
 
@@ -37,7 +38,7 @@ function onMouseLeave(event)
     class:selected={$selected}
     class:hover={$hover}
     class:fully-constrained={entity.solved}
-    href={entity.construction ? "#construction-point" : "#regular-point"}
+    href={$construction ? "#construction-point" : "#regular-point"}
     x={entity.x}
     y={entity.y}
     

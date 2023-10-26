@@ -8,7 +8,7 @@
 	<PropTree/>
 	<button on:click={Viewport.resetCamera}>Reset Camera</button>
 	<button on:click={solver.solveStepped}>Solve Step</button>
-	<button on:click={solver.updateDisplay}>Update Display</button>
+	<button on:click={solver.solveComplete}>Solve Complete</button>
 </aside>
 
 <style>

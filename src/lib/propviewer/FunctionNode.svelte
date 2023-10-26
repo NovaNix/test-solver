@@ -15,21 +15,16 @@
 
 	function updateEquation()
 	{
+		equation = func.getLatex();
+
 		if (func instanceof GenericCFunction)
 		{
-			equation = func.getLatex();
-
 			derivativeFunctions = [];
 
 			for (const [key, value] of Object.entries(func.derivatives))
 			{
 				derivativeFunctions.push(`\\frac{\\partial f}{\\partial ${key}} = ${value.toTex()}`)
 			}
-		}
-
-		else
-		{
-			equation = null;
 		}
 	}
 

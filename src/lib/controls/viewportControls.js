@@ -3,7 +3,6 @@ import {sketch} from "../solver/solver.js";
 import {Point} from "../entities/point.js";
 import * as toolController from "./toolController.js";
 
-
 // Mouse Events
 
 /** @param {WheelEvent} event */
@@ -17,10 +16,6 @@ export function onMouseWheel(event)
 	let zoom = event.deltaY * -0.005;
 
 	Viewport.zoom(zoom);
-
-	//console.log("Zooming by " + zoom);
-
-	//console.log("Mouse Wheel");
 }
 
 let createdPoints = 0;

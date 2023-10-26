@@ -10,6 +10,7 @@
 
 	import TextLeaf from "./tree/TreeLeaf.svelte";
     import TreeNode from "./tree/TreeNode.svelte";
+	import ValueNode from "./ValueNode.svelte";
 
 	import FunctionNode from "./FunctionNode.svelte";
 
@@ -46,17 +47,12 @@
     </svelte:fragment>
     <svelte:fragment slot="children">
         <TextLeaf depth={depth + 2}><p>subtype: {constraint.subtype}</p></TextLeaf>
-		
-		<TreeNode depth={depth + 2}> 
-			<svelte:fragment slot="main">
-				<p>Functions</p>
-			</svelte:fragment>
-			<svelte:fragment slot="children">
-				{#each constraint.functions as func}
-					<FunctionNode depth={depth + 2} func={func}/>
-				{/each}
-			</svelte:fragment>
-		</TreeNode>
+		{#each Object.entries(constraint.values) as [name, value]}
+			<ValueNode name={name} value={value} depth={depth + 2}/>
+		{/each}
+		{#each constraint.functions as func}
+			<FunctionNode depth={depth + 1} func={func}/>
+		{/each}
     </svelte:fragment>
 </TreeNode>
 

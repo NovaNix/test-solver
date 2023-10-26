@@ -26,6 +26,11 @@ export class Parallel extends Constraint
         this.entities.push(this.l1);
         this.entities.push(this.l2);
 
+        this.values = {
+            l1: this.l1,
+            l2: this.l2
+        }
+
         /** @type {Line} */
         // @ts-ignore
         let line1 = this.l1.resolve();
@@ -78,6 +83,11 @@ export class Perpendicular extends Constraint
 
         this.entities.push(this.l1);
         this.entities.push(this.l2);
+
+        this.values = {
+            l1: this.l1,
+            l2: this.l2
+        }
 
         /** @type {Line} */
         // @ts-ignore
@@ -132,6 +142,11 @@ export class Midpoint extends Constraint
         this.entities.push(this.p1);
         this.entities.push(this.l1);
 
+        this.values = {
+            l1: this.l1,
+            p1: this.p1
+        }
+
         /** @type {Line} */
         // @ts-ignore
         let point1 = this.p1.resolve();
@@ -172,6 +187,11 @@ export class ColinearPoint extends Constraint
 
         this.entities.push(this.p1);
         this.entities.push(this.l1);
+
+        this.values = {
+            l1: this.l1,
+            p1: this.p1
+        }
 
         /** @type {Line} */
         // @ts-ignore

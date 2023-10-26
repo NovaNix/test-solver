@@ -9,6 +9,7 @@
 
     let selected = entity.selected;
     let hover = entity.hover;
+    let construction = entity.construction;
 
     function onClick(event)
     {
@@ -28,23 +29,9 @@
     }
 </script>
 
-<!-- <path
-    class="circle-element"
-    class:construction={entity.construction}
-    class:selected={$selected}
-    class:hover={$hover}
-
-    d={`
-    M ${entity.x}, ${entity.y} 
-    a ${entity.radius}, ${entity.radius} 0 1,0 (${entity.radius} * 2), 0 
-    a ${entity.radius}, ${entity.radius} 0 1,0 -(${entity.radius} * 2),0
-    `}
-
-/> -->
-
 <circle
     class="entity"
-    class:construction={entity.construction}
+    class:construction={$construction}
     class:selected={$selected}
     class:hover={$hover}
     class:fully-constrained={entity.solved}
@@ -58,7 +45,6 @@
 <!-- svelte-ignore a11y-no-static-element-interactions -->
 <circle
     class="collision"
-    class:construction={entity.construction}
     class:selected={$selected}
     class:hover={$hover}
 

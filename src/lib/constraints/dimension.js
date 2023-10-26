@@ -37,6 +37,12 @@ class Distance extends Dimension
         this.entities.push(this.p1);
         this.entities.push(this.p2);
 
+        this.values = {
+            p1: this.p1,
+            p2: this.p2,
+            length: this.length
+        }
+
         this.distanceType = distanceType; // This also adds the functions
     }
 

@@ -8,6 +8,7 @@
     
     let selected = entity.selected;
     let hover = entity.hover;
+    let construction = entity.construction;
 
     function onClick(event)
     {
@@ -35,7 +36,7 @@
     y1={entity.y1} 
     y2={entity.y2} 
     class="entity"
-    class:construction={entity.construction}
+    class:construction={$construction}
     class:selected={$selected}
     class:hover={$hover}
     class:fully-constrained={entity.solved}

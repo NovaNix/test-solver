@@ -1,17 +1,32 @@
 <script>
+    import { LockableVStore, VStore } from "../../utils/vstore";
     import TreeNode from "./TreeNode.svelte"
 
+    /** @type {number} */
     export let depth;
+    /** @type {string} */
     export let name;
-    export let value;
+
+    /** @type {VStore<boolean>}*/
+    export let obj;
+
+    /** @type {boolean} */
+    let locked;
+
+    $: locked = obj instanceof LockableVStore ? obj.locked : false;
+    
 </script>
 
 <TreeNode depth={depth}>
     <svelte:fragment slot="main">
         <div>
             <label for={name}><slot/></label>
-            <input type="checkbox" name={name} bind:checked={value} />
-          </div>
+            <input type="checkbox" 
+                name={name} 
+                bind:checked={$obj} 
+                disabled={locked}
+            />
+        </div>
         
     </svelte:fragment>
 </TreeNode>

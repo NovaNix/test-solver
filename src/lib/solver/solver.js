@@ -124,18 +124,18 @@ export const sketch = new Sketch();
 // Set up the test elements
 
 let pointA = sketch.addEntity(new Point("A", 0, 0));
-pointA.fixed = true;
+pointA.fixed.value = true;
 let pointB = sketch.addEntity(new Point("B", 1, 2));
-pointB.fixed = true;
+pointB.fixed.value = true;
 
 let pointC = sketch.addEntity(new Point("C", 2, 1));
-pointC.fixed = true;
+pointC.fixed.value = true;
 
 let line = sketch.addEntity(new Line("Line 0", -2, -1, -1, 1));
-line.construction = true;
+line.construction.value = true;
 
-let line2 = sketch.addEntity(new Line("Line 1", -1, 0, 1, 2));
-line2.construction = true;
+let line2 = sketch.addEntity(new Line("Line 1", -1, -1, 1, -2));
+line2.construction.value = true;
 
 let mid = sketch.addEntity(new Point("Mid", 2, -3));
 
@@ -154,7 +154,7 @@ sketch.addConstraint(new CoincidentPointCircle("Test Circle Coincident 3", point
 // Set up the perpendicular chord
 sketch.addConstraint(new Midpoint("Test Midpoint 1", mid, line));
 
-sketch.addConstraint(new ColinearPoint("Test Colinear 1", mid, line2));
+//sketch.addConstraint(new ColinearPoint("Test Colinear 1", mid, line2));
 sketch.addConstraint(new CoincidentPointCircle("Circle Coincident Chord 1", line2.p1, circle));
 sketch.addConstraint(new CoincidentPointCircle("Circle Coincident Chord 2", line2.p2, circle));
 
@@ -185,6 +185,11 @@ export function solveStepped()
     return false;
 }
 
+export function solveComplete()
+{
+    while (!solveStepped()) {}
+}
+
 // Solves the sketch in a stepped manner
 export function* solve()
 {
@@ -205,7 +210,6 @@ export function* solve()
     constraints.forEach(constraint => functions.push(...constraint.functions));
 
     let simpleSolved = false;
-    //let simpleSolved = true;
 
     console.log("Started simple solve");
 
@@ -243,11 +247,6 @@ export function* solve()
 
                     progressed = true;
                 }
-
-                // Remove the constraint function from the list
-                //functions.splice(functions.indexOf(func), 1);
-
-                //yield;
             }
 
             if (unknown.length == 0)
@@ -291,8 +290,13 @@ export function* solve()
         });
     }
 
-    console.log(`Remaining Functions (${functions.length}): ${functions}`);
-    console.log(`Remaining Unknowns (${unknowns.length}): ${unknowns}`);
+    let unknownFuncList = [];
+    functions.forEach(func => {unknownFuncList.push(func.getFunction())});
+
+    console.log(`Remaining Functions (${functions.length}):`);
+    console.table(unknownFuncList);
+    console.log(`Remaining Unknowns (${unknowns.length}):`);
+    console.table(unknowns);
 
     let newton = newtonSolver(functions, unknowns);
 

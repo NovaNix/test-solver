@@ -54,28 +54,46 @@ export function* newtonSolver(functions, unknowns)
         let J = math.matrix(mat);
         let F = math.matrix(fmat);
 
-        console.log("Jacobian Matrix: " + J.toString());
-        console.log("Function Matrix: " + F.toString());
+        console.log("Jacobian matrix:");
+        console.table(J.toArray());
+        console.log("Function matrix:");
+        console.table(F.toArray());
 
         let JInvert = math.pinv(J);
 
         // Calculate and apply the deltas
         let deltas = math.multiply(JInvert, F);
-        console.log(`Deltas: ${deltas.toString()}`);
 
         let converged = true; // While we're looping through the deltas, we might as well check if we've converged
+
+        // This is used for outputting the deltas nicely to the console
+        let deltaTable = {};
 
         for (let i = 0; i < unknowns.length; i++)
         {
             let deltaex = deltas.get([i]);
 
-            console.log(`Delta ${unknowns[i].resolve().address}: ${deltaex}`)
-
+            let debugRow = {
+                delta: deltaex,
+            };
+            
             unknowns[i].resolve().value += deltaex;
 
             if (Math.abs(deltaex) > Number.EPSILON)
+            {
                 converged = false;
+
+                debugRow.converged = false;
+            }
+            else
+            {
+                debugRow.converged = true;
+            }
+
+            deltaTable[unknowns[i].resolve().address] = debugRow;
         }
+
+        console.table(deltaTable);
 
         // Check to see if converged
         if (converged)

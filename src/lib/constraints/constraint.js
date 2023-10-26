@@ -33,6 +33,12 @@ export class Constraint
 	*/
 	entities;
 
+	/** 
+	 * The values used by the constraint functions, including references and constants
+	 * @type {Object.<string, number|Ref>}
+	*/
+	values;
+
 	constructor(name, type, subtype)
 	{
 		if (this.constructor === Constraint) 
@@ -116,6 +122,27 @@ export class ConstraintFunction
 	getData()
 	{
 		throw new Error("The constraint getData function was not overridden!")
+	}
+
+	/**
+	 * @returns {string} The constraint function represented as a latex string
+	 */
+	getLatex()
+	{
+		throw new Error("The constraint getLatex function was not overridden!")
+	}
+
+	/**
+	 * @returns {string} The function represented as a string
+	 */
+	getFunction()
+	{
+		throw new Error("The constraint getFunction function was not overridden!")
+	}
+
+	toString()
+	{
+		return this.getFunction();
 	}
 }
 
@@ -245,6 +272,11 @@ export class GenericCFunction extends ConstraintFunction
 	getData()
 	{
 		return this.data;
+	}
+
+	getFunction()
+	{
+		return this.func;
 	}
 
 	getLatex()

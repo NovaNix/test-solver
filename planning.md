@@ -76,6 +76,11 @@ abs(p1.y - p2.y) = d
 
 distance(p1, p2) = d
 
+## Distance (line l1, line l2, float d)
+
+implies Parallel(l1, l2)
+distance(l1.start, l2.start) = d
+
 ## Parallel (line l1, line l2)
 
 abs(dot(l1.vec, l2.vec)) = 1 
@@ -119,3 +124,6 @@ maybe look at https://www.stat.cmu.edu/~ryantibs/convexopt-F15/scribes/15-barr-m
 a <= b
 becomes a function that returns b-a if a > b, and 0 if a <= b
 the derivative works the same way. 0 if a <= b, f'(a,b)=b-a otherwise
+
+## Infinite Line Circle Tangent
+distance(line, circle.center) == circle.radius
