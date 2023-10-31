@@ -1,20 +1,20 @@
 <script>
-	import COINCIDENT_ICON from "../../assets/constraints/COINCIDENT.png";
-	import EQUAL_ICON from "../../assets/constraints/EQUAL.png";
-	import HORIZONTAL_ICON from "../../assets/constraints/HORIZONTAL.png";
-	import VERTICAL_ICON from "../../assets/constraints/VERTICAL.png";
-	import PARALLEL_ICON from "../../assets/constraints/PARALLEL.png";
-	import PERPENDICULAR_ICON from "../../assets/constraints/PERPENDICULAR.png";
-	import TANGENT_ICON from "../../assets/constraints/TANGENT.png";
-	import MIDPOINT_ICON from "../../assets/constraints/MIDPOINT.png";
+	import COINCIDENT_ICON from "../../../assets/constraints/COINCIDENT.png";
+	import EQUAL_ICON from "../../../assets/constraints/EQUAL.png";
+	import HORIZONTAL_ICON from "../../../assets/constraints/HORIZONTAL.png";
+	import VERTICAL_ICON from "../../../assets/constraints/VERTICAL.png";
+	import PARALLEL_ICON from "../../../assets/constraints/PARALLEL.png";
+	import PERPENDICULAR_ICON from "../../../assets/constraints/PERPENDICULAR.png";
+	import TANGENT_ICON from "../../../assets/constraints/TANGENT.png";
+	import MIDPOINT_ICON from "../../../assets/constraints/MIDPOINT.png";
 
-	import TextLeaf from "./tree/TreeLeaf.svelte";
-    import TreeNode from "./tree/TreeNode.svelte";
-	import ValueNode from "./ValueNode.svelte";
+	import TextLeaf from "../tree/TreeLeaf.svelte";
+    import TreeNode from "../tree/TreeNode.svelte";
+	import ValueNode from "../ValueNode.svelte";
 
-	import FunctionNode from "./FunctionNode.svelte";
+	import FunctionNode from "../FunctionNode.svelte";
 
-	import {Constraint} from "../constraints/constraint.js";
+	import {Constraint} from "../../constraints/constraint.js";
 
 	
 

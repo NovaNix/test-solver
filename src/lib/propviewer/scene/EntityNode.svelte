@@ -1,10 +1,10 @@
 <script>
-    import {Entity} from "../entities/entity.js"
-    import TextLeaf from "./tree/TreeLeaf.svelte";
-    import TreeNode from "./tree/TreeNode.svelte";
-    import TreeToggle from "./tree/TreeToggle.svelte";
+    import {Entity} from "../../entities/entity.js"
+    import TextLeaf from "../tree/TreeLeaf.svelte";
+    import TreeNode from "../tree/TreeNode.svelte";
+    import TreeToggle from "../tree/TreeToggle.svelte";
 
-    import * as toolController from "../controls/toolController.js";
+    import * as toolController from "../../controls/toolController.js";
 
     /** @type {Entity}*/
     export let entity;
