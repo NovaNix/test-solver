@@ -7,9 +7,20 @@ const config = { }
 const math = create(all, config)
 
 /**
+ * @typedef {Object} NewtonSolverDebugInfo
+ * @property {string} solver
+ * @property {import("mathjs").Matrix} jacobianMat
+ * @property {import("mathjs").Matrix} functionMat
+ * @property {Object.<string, {delta: number, converged: boolean}>} deltas
+ * @property {boolean} converged
+ * @property {number} iteration
+ */
+
+/**
  * 
  * @param {ConstraintFunction[]} functions 
  * @param {Ref[]} unknowns 
+ * @returns {Generator<NewtonSolverDebugInfo, void, void>}
  */
 export function* newtonSolver(functions, unknowns)
 {
@@ -19,6 +30,12 @@ export function* newtonSolver(functions, unknowns)
 
     while (solving)
     {
+        // This is used for displaying parts of this solve step in the sidebar
+        /** @type {NewtonSolverDebugInfo} */
+        let debugInfo = {
+            solver: "Newton's method"
+        };
+
         /** @type {number[][]} */
         let mat = [];
 
@@ -54,10 +71,14 @@ export function* newtonSolver(functions, unknowns)
         let J = math.matrix(mat);
         let F = math.matrix(fmat);
 
-        console.log("Jacobian matrix:");
-        console.table(J.toArray());
-        console.log("Function matrix:");
-        console.table(F.toArray());
+        debugInfo.jacobianMat = J;
+        debugInfo.functionMat = F;
+
+        // The matrices are now displayed in the UI. These prints are no longer necessary
+        // console.log("Jacobian matrix:");
+        // console.table(J.toArray());
+        // console.log("Function matrix:");
+        // console.table(F.toArray());
 
         let JInvert = math.pinv(J);
 
@@ -93,7 +114,8 @@ export function* newtonSolver(functions, unknowns)
             deltaTable[unknowns[i].resolve().address] = debugRow;
         }
 
-        console.table(deltaTable);
+        debugInfo.deltas = deltaTable;
+        //console.table(deltaTable);
 
         // Check to see if converged
         if (converged)
@@ -106,7 +128,9 @@ export function* newtonSolver(functions, unknowns)
             solving = false;
         }
 
-        yield;
+        debugInfo.converged = converged;
+
+        yield debugInfo;
     }
 
     

@@ -154,7 +154,7 @@ sketch.addConstraint(new CoincidentPointCircle("Test Circle Coincident 3", point
 // Set up the perpendicular chord
 sketch.addConstraint(new Midpoint("Test Midpoint 1", mid, line));
 
-//sketch.addConstraint(new ColinearPoint("Test Colinear 1", mid, line2));
+sketch.addConstraint(new ColinearPoint("Test Colinear 1", mid, line2));
 sketch.addConstraint(new CoincidentPointCircle("Circle Coincident Chord 1", line2.p1, circle));
 sketch.addConstraint(new CoincidentPointCircle("Circle Coincident Chord 2", line2.p2, circle));
 
@@ -166,15 +166,20 @@ export function updateDisplay()
     sketch.updateDisplay();
 }
 
+export const solverState = new writable({
+    stage: "none",
+
+});
+
 // Actual solver code
 
 let solveSession = solve();
 
 // A wrapper for the solve function
-export function solveStepped()
+export function solveStepped(updateSidebar = true)
 {
     let next = solveSession.next();
-    
+
     if (next.done)
     {
         solveSession = solve();
@@ -182,17 +187,40 @@ export function solveStepped()
     }
 
     sketch.updateDisplay();
+    
+    if (updateSidebar)
+        updateStateSidebar();
+
     return false;
 }
 
 export function solveComplete()
 {
-    while (!solveStepped()) {}
+    while (!solveStepped(false)) {}
+
+    updateStateSidebar();
 }
+
+export function updateStateSidebar()
+{
+    solverState.update(items => {
+        return items;
+    });
+}
+
+/**
+ * @typedef {Object} SolverState
+ * @property {string} stage
+ * @property {Object} simple
+ * @property {import("./newtonSolver.js").NewtonSolverDebugInfo} solver
+ */
 
 // Solves the sketch in a stepped manner
 export function* solve()
 {
+    /** @type {SolverState} */
+    let stateDebug = get(solverState); // This is used for writing to the solverState without updating the sidebar
+
     // Set all of the entities to unsolved
     let entities = get(sketch.entities);
 
@@ -212,6 +240,15 @@ export function* solve()
     let simpleSolved = false;
 
     console.log("Started simple solve");
+
+    stateDebug.stage = "simple solve";
+
+    let simpleSolveDebug = {
+        solvedFunctions: [],
+        iterations: 0
+    };
+
+    stateDebug.simple = simpleSolveDebug;
 
     while (!simpleSolved)
     {
@@ -260,13 +297,14 @@ export function* solve()
                 // The constraint is solved!
 
                 // Remove the constraint function from the list
-                functions.splice(functions.indexOf(func), 1); // Note: we may have to remove the constraint function earlier than this to prevent it from being solved multiple times. For now though it's fine
-
+                let solvedFunction = functions.splice(functions.indexOf(func), 1); // Note: we may have to remove the constraint function earlier than this to prevent it from being solved multiple times. For now though it's fine
+                simpleSolveDebug.solvedFunctions.push(...solvedFunction); 
                 progressed = true;
             }
         }
 
         simpleSolved = !progressed;
+        simpleSolveDebug.iterations++;
     }
 
     console.log("Finished simple solve");
@@ -303,9 +341,18 @@ export function* solve()
     let solving = true;
     let iterations = 0;
 
+    stateDebug.stage = "optimization"
+
     while (solving)
     {
-        newton.next();
+        let solverDebug = newton.next().value;
+        if (solverDebug == null)
+            break;
+
+        solverDebug.iteration = iterations;
+
+        // Move the debug info into the solver state
+        stateDebug.solver = solverDebug;
 
         // Prepare for next loop
 
@@ -320,4 +367,8 @@ export function* solve()
         yield;
     }
 
+    stateDebug.stage = "complete";
+    console.log("Completed solve!")
+
+    updateStateSidebar();
 }

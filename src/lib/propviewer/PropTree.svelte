@@ -1,8 +1,8 @@
 <script>
     import {sketch} from "../solver/solver.js"
-    import EntityNode from "./EntityNode.svelte";
+    import EntityNode from "./scene/EntityNode.svelte";
     import TreeNode from "./tree/TreeNode.svelte";
-    import ConstraintNode from "./ConstraintNode.svelte";
+    import ConstraintNode from "./scene/ConstraintNode.svelte";
 
     let entities = sketch.entities;
     let constraints = sketch.constraints;
@@ -44,7 +44,7 @@
 
     #prop-tree {
         position: relative;
-        height: 80%;
+        min-height: 50%;
         /* min-width: max-content; */
         width: 100%;
 
