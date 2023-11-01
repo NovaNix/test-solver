@@ -8,7 +8,7 @@
 
 <aside id="sidebar">
 	<PropTree/>
-	<SolverPanel state={solver.solverState}/>
+	<!-- <SolverPanel state={solver.solverState}/> -->
 
 </aside>
 

@@ -3,6 +3,8 @@
     import EntityNode from "./scene/EntityNode.svelte";
     import TreeNode from "./tree/TreeNode.svelte";
     import ConstraintNode from "./scene/ConstraintNode.svelte";
+    import SolverPanel from "../panels/SolverPanel.svelte";
+    import * as solver from "../solver/solver.js"
 
     let entities = sketch.entities;
     let constraints = sketch.constraints;
@@ -30,6 +32,7 @@
                 {/each}
             </svelte:fragment>
         </TreeNode>
+        <SolverPanel state={solver.solverState}/>
     </div>
 </div>
 
