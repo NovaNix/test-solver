@@ -10,6 +10,8 @@ import { FloatData, Ref } from "../entities/entity.js";
 import { ColinearPoint, Midpoint, Perpendicular } from "../constraints/lines.js";
 import { newtonSolver } from "./newtonSolver.js";
 
+export const autoSolve = writable(true);
+
 export class Sketch 
 {
     /** @type {import("svelte/store").Writable<Entity[]>} */
@@ -196,7 +198,13 @@ export function solveStepped(updateSidebar = true)
 
 export function solveComplete()
 {
+    let startTime = Date.now();
+
     while (!solveStepped(false)) {}
+
+    let endTime = Date.now();
+
+    console.log("Complete solve took " + (endTime - startTime) + "ms");
 
     updateStateSidebar();
 }
@@ -372,3 +380,12 @@ export function* solve()
 
     updateStateSidebar();
 }
+
+// This event needs to be at the bottom because it relys on everything declared here
+
+autoSolve.subscribe(value => {
+    if (value)
+    {
+        solveComplete();
+    }
+});

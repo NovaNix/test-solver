@@ -10,30 +10,38 @@
     /** @type {Store<import("../solver/solver.js").SolverState>} */
     export let state;
 
+    /** @type {Store<boolean>}*/
+    let autoSolve = solver.autoSolve;
+
 </script>
 
-<aside>
-    <TreeNode>
-        <svelte:fragment slot="main">Solver</svelte:fragment>
-        <svelte:fragment slot="children">
-            <TreeLeaf depth={1}>Stage: {$state.stage}</TreeLeaf>
-        
-            {#if $state.simple}
-                <SimplePanel state={$state.simple} depth={1}/>
-            {/if}
-            {#if $state.solver}
-                <ComplexPanel state={$state.solver} depth={1}/>
-            {/if}
-        
-        </svelte:fragment>
-    </TreeNode>
 
-    <div>
-        <button on:click={Viewport.resetCamera}>Reset Camera</button>
-        <button on:click={solver.solveStepped}>Solve Step</button>
-        <button on:click={solver.solveComplete}>Solve Complete</button>
+<TreeNode>
+    <svelte:fragment slot="main">Solver</svelte:fragment>
+    <svelte:fragment slot="children">
+        <TreeLeaf depth={1}>Stage: {$state.stage}</TreeLeaf>
+    
+        {#if $state.simple}
+            <SimplePanel state={$state.simple} depth={1}/>
+        {/if}
+        {#if $state.solver}
+            <ComplexPanel state={$state.solver} depth={1}/>
+        {/if}
+    
+    </svelte:fragment>
+</TreeNode>
+
+<div>
+    <button on:click={Viewport.resetCamera}>Reset Camera</button>
+    <button on:click={solver.solveStepped}>Solve Step</button>
+    <button on:click={solver.solveComplete}>Solve Complete</button>
+    <div id="auto-solve-check">
+        <input type="checkbox" bind:checked={$autoSolve} name="autoSolve"/>
+        <label for="autoSolve">Auto Solve</label>
     </div>
-</aside>
+     
+</div>
+
 
 <style>
     /* aside {
@@ -41,4 +49,12 @@
         height: max-content;
         width: max-content;
     } */
+
+    label {
+        color: white;
+    }
+
+    #auto-solve-check {
+        display: block;
+    }
 </style>
