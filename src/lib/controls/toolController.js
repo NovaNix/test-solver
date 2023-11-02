@@ -1,9 +1,8 @@
 import {Entity} from "../entities/entity.js"
 import { writable, get } from 'svelte/store';
 import { sketch } from "../solver/solver.js";
-
-let drawTools = [];
-let constrainTools = [];
+import { SelectTool } from "./tools/selectTool.js";
+import * as Viewport from "../panels/Viewport.svelte";
 
 export const SELECT_MODE_NEW = 0;
 export const SELECT_MODE_ADD = 1;
@@ -49,4 +48,52 @@ export function clearSelection()
 
     // Clear the selected list
     selected.set([]);
+}
+
+let miscTools = [];
+let drawTools = [];
+let constrainTools = [];
+
+let currentTool = new SelectTool();
+
+// Here are all of the forwarded events
+
+export function onLeftClick(event, entity = null)
+{
+    let pos = Viewport.viewToWorld(event.clientX, event.clientY);
+    currentTool.onLeftClick(event, pos, entity);
+}
+
+export function onRightClick(event, entity = null)
+{
+    let pos = Viewport.viewToWorld(event.clientX, event.clientY);
+    currentTool.onRightClick(event, pos, entity);
+}
+
+export function onMouseDown(event, entity = null)
+{
+    let pos = Viewport.viewToWorld(event.clientX, event.clientY);
+    currentTool.onMouseDown(event, pos, entity);
+}
+
+export function onMouseUp(event, entity = null)
+{
+    let pos = Viewport.viewToWorld(event.clientX, event.clientY);
+    currentTool.onMouseUp(event, pos, entity);
+}
+
+export function onMouseMove(event, entity = null)
+{
+    let pos = Viewport.viewToWorld(event.clientX, event.clientY);
+    currentTool.onMouseMove(event, pos, entity);
+}
+
+export function onKeyPress(event)
+{
+    currentTool.onKeyPress(event);
+}
+
+export function onKeyRelease(event)
+{
+    currentTool.onKeyRelease(event);
 }

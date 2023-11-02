@@ -1,34 +1,58 @@
 <script>
 
-import {Point} from "../point.js";
-import * as Viewport from "../../panels/Viewport.svelte";
-import * as toolController from "../../controls/toolController.js";
+    import {Point} from "../point.js";
+    import * as Viewport from "../../panels/Viewport.svelte";
+    import * as toolController from "../../controls/toolController.js";
 
-/** @type {Point} */
-export let entity;
+    /** @type {Point} */
+    export let entity;
 
-let selected = entity.selected;
-let hover = entity.hover;
-let construction = entity.construction;
+    let selected = entity.selected;
+    let hover = entity.hover;
+    let construction = entity.construction;
 
-let pointSize = Viewport.pointSize;
+    let pointSize = Viewport.pointSize;
 
-function onClick(event)
-{
-    toolController.select(entity.address);
+    function onClick(event)
+    {
+        if (event.button == 0)
+            toolController.onLeftClick(event, entity);
+        else if (event.button == 2)
+            toolController.onRightClick(event, entity);
 
-    event.stopPropagation();
-}
+        event.stopPropagation();
+    }
 
-function onMouseEnter(event)
-{
-    $hover = true; 
-}
+    function onMouseEnter(event)
+    {
+        $hover = true; 
+    }
 
-function onMouseLeave(event)
-{
-    $hover = false;
-}
+    function onMouseLeave(event)
+    {
+        $hover = false;
+    }
+
+    function onMouseMove(event)
+    {
+        toolController.onMouseMove(event, entity);
+
+        event.stopPropagation();
+    }
+
+    function onMouseDown(event)
+    {
+        toolController.onMouseDown(event, entity);
+
+        event.stopPropagation();
+    }
+
+    function onMouseUp(event)
+    {
+        toolController.onMouseUp(event, entity);
+
+        event.stopPropagation();
+    }
 
 </script>
 
@@ -56,6 +80,9 @@ function onMouseLeave(event)
     on:click={onClick}
     on:mouseenter={onMouseEnter}
     on:mouseleave={onMouseLeave}
+    on:mousemove={onMouseMove}
+    on:mousedown={onMouseDown}
+    on:mouseup={onMouseUp}
 />
 
 <style>

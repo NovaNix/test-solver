@@ -12,7 +12,10 @@
 
     function onClick(event)
     {
-        toolController.select(entity.address);
+        if (event.button == 0)
+            toolController.onLeftClick(event, entity);
+        else if (event.button == 2)
+            toolController.onRightClick(event, entity);
 
         event.stopPropagation();
     }
@@ -25,6 +28,27 @@
     function onMouseLeave(event)
     {
         $hover = false;
+    }
+
+    function onMouseMove(event)
+    {
+        toolController.onMouseMove(event, entity);
+
+        event.stopPropagation();
+    }
+
+    function onMouseDown(event)
+    {
+        toolController.onMouseDown(event, entity);
+
+        event.stopPropagation();
+    }
+
+    function onMouseUp(event)
+    {
+        toolController.onMouseUp(event, entity);
+
+        event.stopPropagation();
     }
 
 </script>
@@ -48,6 +72,9 @@
     on:click={onClick}
     on:mouseenter={onMouseEnter}
     on:mouseleave={onMouseLeave}
+    on:mousemove={onMouseMove}
+    on:mousedown={onMouseDown}
+    on:mouseup={onMouseUp}
     x1={entity.x1} 
     x2={entity.x2} 
     y1={entity.y1} 

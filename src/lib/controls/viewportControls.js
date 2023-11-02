@@ -25,16 +25,12 @@ export function onMouseClick(event)
 {
 	if (event.button == 0) // Left Click
 	{
-		let [x, y] = Viewport.viewToWorld(event.clientX, event.clientY);
+		toolController.onLeftClick(event);
+	}
 
-		let newPoint = sketch.addEntity(new Point("Point " + createdPoints, x, y));
-
-		// Clear the selection and select the new entity
-
-		toolController.clearSelection();
-		toolController.select(newPoint.name);
-
-		createdPoints++;
+	else if (event.button == 2) // Right Click
+	{
+		toolController.onRightClick(event);
 	}
 }
 
@@ -48,7 +44,12 @@ let startPos = [0, 0]; // The camera position (in world space) when the drag sta
 /** @param {MouseEvent} event */
 export function onMouseDown(event)
 {
-	if (event.button == 1) // Middle Click
+	if (event.button == 0) // Left Click
+	{
+		toolController.onMouseDown(event);
+	}
+
+	else if (event.button == 1) // Middle Click
 	{
 		viewDragging = true;
 		startMouse = [event.clientX, event.clientY];
@@ -59,7 +60,12 @@ export function onMouseDown(event)
 /** @param {MouseEvent} event */
 export function onMouseUp(event)
 {
-	if (event.button == 1) // Middle Click
+	if (event.button == 0) // Left Click
+	{
+		toolController.onMouseUp(event);
+	}
+
+	else if (event.button == 1) // Middle Click
 	{
 		viewDragging = false;
 	}
@@ -68,6 +74,7 @@ export function onMouseUp(event)
 /** @param {MouseEvent} event */
 export function onMouseMove(event)
 {
+	toolController.onMouseMove(event);
 
 	if (viewDragging)
 	{
