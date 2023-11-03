@@ -20,6 +20,9 @@
     <svelte:fragment slot="main">Solver</svelte:fragment>
     <svelte:fragment slot="children">
         <TreeLeaf depth={1}>Stage: {$state.stage}</TreeLeaf>
+        {#if $state.completeTime}
+        <TreeLeaf depth={1}>Solve Time: {$state.completeTime}ms</TreeLeaf>
+        {/if}
     
         {#if $state.simple}
             <SimplePanel state={$state.simple} depth={1}/>

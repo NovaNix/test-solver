@@ -19,8 +19,11 @@ export class Sketch
     /** @type {import("svelte/store").Writable<Constraint[]>} */
     constraints = writable([]);
 
-    /** @type {import("svelte/store").Writable<Constraint[]>} */
+    /** @type {Constraint[]} */
     tempConstraints = writable([]);
+
+    /** @type {Entity[]} */
+    tempEntities = [];
 
     // Map containing all entities, and sub entities
     entityMap = new Map();
@@ -56,6 +59,34 @@ export class Sketch
         return entity; // Returns the added entity for chaining
     }
 
+    removeEntity(entity)
+    {
+        this.entities.update(items => {
+            items.splice(items.indexOf(entity), 1);
+            return items;
+        });
+
+        this.#removeEntityMap(entity);
+
+        return entity;
+    }
+
+    addTempEntity(entity)
+    {
+        this.addEntity(entity);
+        this.tempEntities.push(entity);
+
+        return entity;
+    }
+
+    removeTempEntity(entity)
+    {
+        this.removeEntity(entity);
+        this.tempEntities.splice(this.tempEntities.indexOf(entity), 1);
+        
+        return entity;
+    }
+
     /**
      * Recursively adds the entity and all of the sub entities to the entity map
      * @param {Entity} entity 
@@ -76,6 +107,22 @@ export class Sketch
         }
 
     }
+
+    #removeEntityMap(entity)
+    {
+        this.entityMap.delete(entity.address);
+
+        // add the sub entities to the map
+        for (let sub of Object.values(entity.data))
+        {
+            if (sub instanceof Entity)
+            {
+                this.#removeEntityMap(sub);
+            }
+        }
+    }
+
+
 
     getEntity(address)
     {
@@ -204,6 +251,8 @@ export function solveComplete()
 
     let endTime = Date.now();
 
+    get(solverState).completeTime = endTime - startTime;
+
     console.log("Complete solve took " + (endTime - startTime) + "ms");
 
     updateStateSidebar();
@@ -228,6 +277,8 @@ export function* solve()
 {
     /** @type {SolverState} */
     let stateDebug = get(solverState); // This is used for writing to the solverState without updating the sidebar
+
+    // TODO consider clearing the state when the solve starts. Might need to restructure some code to prevent the generator from being called.
 
     // Set all of the entities to unsolved
     let entities = get(sketch.entities);
@@ -347,6 +398,7 @@ export function* solve()
     let newton = newtonSolver(functions, unknowns);
 
     let solving = true;
+    let failed = false;
     let iterations = 0;
 
     stateDebug.stage = "optimization"
@@ -369,13 +421,23 @@ export function* solve()
         if (iterations > 100)
         {
             console.error("Solve failed! Too many iterations!");
+            failed = true;
             solving = false;
         }
 
         yield;
     }
 
-    stateDebug.stage = "complete";
+    if (failed)
+    {
+        stateDebug.stage = "failed";
+    }
+
+    else
+    {
+        stateDebug.stage = "complete";
+    }
+
     console.log("Completed solve!")
 
     updateStateSidebar();

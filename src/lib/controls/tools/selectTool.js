@@ -33,17 +33,13 @@ export class SelectTool extends Tool
     {
         if (entity)
         {
-            dragging = true;
-            draggingEntity = entity;
-            dragStart = pos;
+            startDrag(entity, pos);
         }
     }
 
     onMouseUp(event, pos, entity)
     {
-        dragging = false;
-        draggingEntity = null;
-        dragStart = null;
+        endDrag();
     }
 
     onMouseMove(event, pos, entity)
@@ -52,7 +48,26 @@ export class SelectTool extends Tool
     }
 }
 
+function startDrag(entity, pos)
+{
+    dragging = true;
+    draggingEntity = entity;
+    dragStart = pos;
+}
+
 function updateDrag(pos)
 {
 
+}
+
+function endDrag()
+{
+    if (dragging)
+    {
+        
+    }
+
+    dragging = false;
+    draggingEntity = null;
+    dragStart = null;
 }
