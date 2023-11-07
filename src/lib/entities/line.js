@@ -1,5 +1,6 @@
 import {Entity, FloatData} from "./entity.js";
 import {Point} from "./point.js"
+import * as VecMath from "../utils/vecmath.js";
 
 export class Line extends Entity {
 
@@ -15,6 +16,14 @@ export class Line extends Entity {
 
         this.p1.parent = this;
         this.p2.parent = this;
+    }
+
+    colinear(x, y) 
+    {
+        let dir = VecMath.normalize(this.x2 - this.x1, this.y2 - this.y1);
+        let dir2 = VecMath.normalize(x - this.x1, y - this.y1);
+
+        return (1 - Math.abs(VecMath.dot(dir[0], dir[1], dir2[0], dir2[1]))) < Number.EPSILON;
     }
 
     /** Returns the Entity of p1. If you just want the vector of the point, use p1vec() */
