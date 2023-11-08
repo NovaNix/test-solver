@@ -20,7 +20,7 @@ export class Sketch
     constraints = writable([]);
 
     /** @type {Constraint[]} */
-    tempConstraints = writable([]);
+    tempConstraints = [];
 
     /** @type {Entity[]} */
     tempEntities = [];
@@ -87,6 +87,16 @@ export class Sketch
         return entity;
     }
 
+    removeTempEntities()
+    {
+        for (let entity of this.tempEntities)
+        {
+            this.removeEntity(entity);
+        }
+
+        this.tempEntities = [];
+    }
+
     /**
      * Recursively adds the entity and all of the sub entities to the entity map
      * @param {Entity} entity 
@@ -122,8 +132,6 @@ export class Sketch
         }
     }
 
-
-
     getEntity(address)
     {
         return this.entityMap.get(address);
@@ -146,6 +154,16 @@ export class Sketch
         return constraint; // Returns the added constraint for chaining
     }
 
+    removeConstraint(constraint)
+    {
+        this.constraints.update(items => {
+            items.splice(items.indexOf(constraint), 1);
+            return items;
+        });
+
+        return constraint;
+    }
+
     getConstraint(name)
     {
         let constraints = get(this.constraints);
@@ -166,6 +184,32 @@ export class Sketch
         return this.getConstraint(name) != null;
     }
 
+    addTempConstraint(constraint)
+    {
+        this.addConstraint(constraint);
+        this.tempConstraints.push(constraint);
+
+        return constraint;
+    }
+
+    removeTempConstraint(constraint)
+    {
+        this.removeConstraint(constraint);
+        this.tempConstraints.splice(this.tempConstraints.indexOf(constraint), 1);
+
+        return constraint;
+    }
+
+    removeTempConstraints()
+    {
+        for (let constraint of this.tempConstraints)
+        {
+            this.removeConstraint(constraint);
+        }
+
+        this.tempConstraints = [];
+    }
+
 }
 
 export const sketch = new Sketch();
@@ -177,8 +221,8 @@ pointA.fixed.value = true;
 let pointB = sketch.addEntity(new Point("B", 1, 2));
 pointB.fixed.value = true;
 
-let pointC = sketch.addEntity(new Point("C", 2, 1));
-pointC.fixed.value = true;
+//let pointC = sketch.addEntity(new Point("C", 2, 1));
+//pointC.fixed.value = true;
 
 let line = sketch.addEntity(new Line("Line 0", -2, -1, -1, 1));
 line.construction.value = true;
@@ -198,7 +242,7 @@ sketch.addConstraint(new CoincidentPoints("Test Coincident 2", pointB, line.p2))
 // Set up the circle
 sketch.addConstraint(new CoincidentPointCircle("Test Circle Coincident 1", pointA, circle));
 sketch.addConstraint(new CoincidentPointCircle("Test Circle Coincident 2", pointB, circle));
-sketch.addConstraint(new CoincidentPointCircle("Test Circle Coincident 3", pointC, circle));
+//sketch.addConstraint(new CoincidentPointCircle("Test Circle Coincident 3", pointC, circle));
 
 // Set up the perpendicular chord
 sketch.addConstraint(new Midpoint("Test Midpoint 1", mid, line));
@@ -223,6 +267,17 @@ export const solverState = new writable({
 // Actual solver code
 
 let solveSession = solve();
+
+/**
+ * Solves the sketch if autosolve is enabled
+ */
+export function requestSolve()
+{
+    if (get(autoSolve))
+    {
+        solveComplete();
+    }
+}
 
 // A wrapper for the solve function
 export function solveStepped(updateSidebar = true)
@@ -253,7 +308,7 @@ export function solveComplete()
 
     get(solverState).completeTime = endTime - startTime;
 
-    console.log("Complete solve took " + (endTime - startTime) + "ms");
+    //console.log("Complete solve took " + (endTime - startTime) + "ms");
 
     updateStateSidebar();
 }
@@ -298,7 +353,7 @@ export function* solve()
 
     let simpleSolved = false;
 
-    console.log("Started simple solve");
+    //console.log("Started simple solve");
 
     stateDebug.stage = "simple solve";
 
@@ -320,7 +375,7 @@ export function* solve()
             // If there's only one unknown value, we can solve the constraint function!
             if (unknown.length == 1)
             {
-                console.log(`Found a solvable constraint function! (Constraint:  ${func.parent.name})`);
+                //console.log(`Found a solvable constraint function! (Constraint:  ${func.parent.name})`);
 
                 /** @type {FloatData} */
                 let data = unknown[0].resolve();
@@ -347,8 +402,8 @@ export function* solve()
 
             if (unknown.length == 0)
             {
-                console.log("Constraint function has all variables known! Checking if met.");
-                console.log("Result: " + func.solve());
+                //console.log("Constraint function has all variables known! Checking if met.");
+                //console.log("Result: " + func.solve());
                 // All of the values are known! We need to make sure this constraint is solved before we remove it
                 if (!func.isMet())
                     throw new Error("All of the values of the function are known, but the function is not met!");
@@ -366,11 +421,11 @@ export function* solve()
         simpleSolveDebug.iterations++;
     }
 
-    console.log("Finished simple solve");
-    console.log("Remaining constraint functions: " + functions.length);
+    //console.log("Finished simple solve");
+    //console.log("Remaining constraint functions: " + functions.length);
     yield;
 
-    console.log("Beginning complex solve using newton's method");
+    //console.log("Beginning complex solve using newton's method");
 
     /** @type {Ref[]} */
     let unknowns = [];
@@ -390,10 +445,10 @@ export function* solve()
     let unknownFuncList = [];
     functions.forEach(func => {unknownFuncList.push(func.getFunction())});
 
-    console.log(`Remaining Functions (${functions.length}):`);
-    console.table(unknownFuncList);
-    console.log(`Remaining Unknowns (${unknowns.length}):`);
-    console.table(unknowns);
+    //console.log(`Remaining Functions (${functions.length}):`);
+    //console.table(unknownFuncList);
+    //console.log(`Remaining Unknowns (${unknowns.length}):`);
+    //console.table(unknowns);
 
     let newton = newtonSolver(functions, unknowns);
 
@@ -438,7 +493,7 @@ export function* solve()
         stateDebug.stage = "complete";
     }
 
-    console.log("Completed solve!")
+    //console.log("Completed solve!")
 
     updateStateSidebar();
 }

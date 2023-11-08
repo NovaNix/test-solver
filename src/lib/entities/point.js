@@ -14,6 +14,12 @@ export class Point extends Entity
 
     }
 
+    set(x, y)
+    {
+        this.data.x.value = x;
+        this.data.y.value = y;
+    }
+
     /**
      * @returns {number}
      */
