@@ -6,6 +6,8 @@ import { create, all } from 'mathjs'
 const config = { }
 const math = create(all, config)
 
+const ACCEPTABLE_ERROR = 0.000001;
+
 /**
  * @typedef {Object} NewtonSolverDebugInfo
  * @property {string} solver
@@ -100,7 +102,7 @@ export function* newtonSolver(functions, unknowns)
             
             unknowns[i].resolve().value += deltaex;
 
-            if (Math.abs(deltaex) > Number.EPSILON)
+            if (Math.abs(deltaex) > ACCEPTABLE_ERROR)
             {
                 converged = false;
 
