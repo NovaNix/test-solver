@@ -20,7 +20,7 @@
             <svelte:fragment slot="main">Deltas</svelte:fragment>
             <svelte:fragment slot="children">
                 {#each Object.entries(state.deltas) as [name, value]}
-                    <TreeLeaf depth={depth + 2}>{name}: {value.delta.toFixed(4)}</TreeLeaf>
+                    <TreeLeaf depth={depth + 2}><span title={value.delta}>{name}: {value.delta.toFixed(4)}</span></TreeLeaf>
                 {/each}
             </svelte:fragment>
         </TreeNode>
