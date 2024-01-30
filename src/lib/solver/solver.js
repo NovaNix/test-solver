@@ -10,7 +10,7 @@ import { FloatData, Ref } from "../entities/entity.js";
 import { ColinearPoint, Midpoint, Perpendicular } from "../constraints/lines.js";
 import { newtonSolver } from "./newtonSolver.js";
 
-export const autoSolve = writable(true);
+export const autoSolve = writable(false);
 
 export class Sketch 
 {
