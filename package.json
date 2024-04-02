@@ -19,7 +19,7 @@
     "vite": "^4.4.5"
   },
   "dependencies": {
-    "katex": "^0.16.9",
+    "katex": "^0.16.10",
     "mathjs": "^11.11.2",
     "nerdamer": "^1.1.13"
   }
